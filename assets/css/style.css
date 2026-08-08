@@ -391,10 +391,10 @@ body{
   position: absolute;
   background: var(--white);
   border-radius: var(--border-radius-md);
-  padding: 18px 24px;
+  padding: 10px 14px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.10);
   backdrop-filter: blur(4px);
-  min-width: 180px;
+  min-width: 120px;
   border: 2px solid rgba(107, 26, 42, 0.1);
   border-left-width: 5px;
 }
@@ -417,14 +417,14 @@ body{
 }
 
 .card-icon {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--white);
-  font-size: 1.2rem;
+  font-size: 1rem;
   flex-shrink: 0;
 }
 
@@ -437,15 +437,33 @@ body{
 }
 
 .floating-card h3 {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   margin: 0;
 }
 
 .floating-card p {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--gray-mid);
   margin: 0;
+}
+
+.floating-card {
+  animation: float 3s ease-in-out infinite;
+}
+
+.interest-card {
+  animation-delay: 1.5s; /* Makes the two cards move at different times */
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
 
@@ -586,6 +604,12 @@ body{
 }
 
 /* Stacked Background Cards */
+.account-visual {
+  position: relative;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
 .bg-card {
   position: absolute;
   width: 140px;
@@ -594,6 +618,10 @@ body{
   overflow: hidden;
   box-shadow: 0 10px 20px rgba(0,0,0,0.05);
   filter: opacity(0.85);
+
+  transition: 
+    transform 0.9s cubic-bezier(.22, 1, .36, 1),
+    opacity 0.9s;
 }
 
 .bg-card img {
@@ -602,27 +630,54 @@ body{
   object-fit: cover;
 }
 
+
+/* Left background card */
 .bg-card-left {
   left: 10%;
-  transform: translateY(-10px);
+  transform:
+    translateY(-10px)
+    rotateY(25deg)
+    scale(0.9);
+
+  opacity: 0.75;
 }
 
+
+/* Right background card */
 .bg-card-right {
   right: 10%;
-  transform: translateY(-10px);
+  transform:
+    translateY(-10px)
+    rotateY(-25deg)
+    scale(0.9);
+
+  opacity: 0.75;
 }
+
 
 /* Foreground Main Card */
 .main-card {
   position: relative;
   z-index: 2;
+
   width: 260px;
   height: 350px;
+
   border-radius: 16px;
   overflow: hidden;
+
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
   border: 2px solid #ffffff;
+
+  transition:
+    transform 0.9s cubic-bezier(.22, 1, .36, 1),
+    opacity 0.9s;
+  
+  transform:
+    scale(1)
+    rotateY(0deg);
 }
+
 
 .main-card img {
   width: 100%;
@@ -2200,68 +2255,8 @@ body {
 .submit-btn:hover {
   opacity: 0.95;
   transform: translateY(-1px);
-
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
-
-.regulatory-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  background-color: #e6f3ff; /* Soft light blue background */
-  border: 1.5px solid #38bdf8;  /* Vibrant blue border */
-  border-radius: 12px;        /* Rounded corners matching the image */
-  padding: 8px 18px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
-}
-
-/* "Insured by" Text */
-.insured-text {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #334155;
-  white-space: nowrap;
-}
-
-/* Vertical Line Separator */
-.divider {
-  width: 1px;
-  height: 24px;
-  background-color: #94a3b8;
-  margin: 0 2px;
-}
-
-/* Logo Dimensions */
-.badge-logo {
-  height: 28px;
-  width: auto;
-  object-fit: contain;
-}
-
-.cbn-logo {
-  height: 32px; /* Slightly taller to balance with NDIC logo */
-}
-
-/* "Licensed by..." Text */
-.license-text {
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #334155;
-  white-space: nowrap;
-}
-
-/* Mobile Responsiveness */
-@media (max-width: 600px) {
-  .regulatory-badge {
-    flex-wrap: wrap;
-    justify-content: center;
-    text-align: center;
-    padding: 12px 16px;
-    border-radius: 16px;
-  }
-}
 /* 404 */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
