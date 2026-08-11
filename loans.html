@@ -21,7 +21,7 @@
 </head>
 <body>
 
-<!-- ==========================================
+  <!-- ==========================================
          TOP BAR
   ========================================== -->
   <div class="top-bar">
@@ -32,8 +32,8 @@
         <a href="mailto:info@foresightmfbltd.com.ng"><i class="fas fa-envelope"></i> info@foresightmfbltd.com.ng</a>
       </div>
       <div class="top-right">
-        <a href="#"><i class="fas fa-shield-alt"></i> Internet Banking</a>
-        <a href="#"><i class="fas fa-mobile-alt"></i> Mobile App</a>
+        <a href="#"><i class="fas fa-shield-alt"></i></a>
+        <a href="#"><i class="fas fa-mobile-alt"></i></a>
       </div>
     </div>
   </div>
@@ -45,59 +45,149 @@
     <div class="container">
       <nav class="navbar">
         <!-- Logo -->
-        <a href="index.html" class="logo">
+        <a href="/" class="logo">
           <img src="assets/images/logo.png"
      alt="Foresight Microfinance Bank"
      class="logo-img">
         </a>
 
-        <!-- Navigation Menu -->
-         <ul class="nav-menu">
-    <li><a href="index.html" class="active">Home</a></li>
-    <li><a href="about.html">About Us</a></li>
-    <li><a href="services.html">Services</a></li>
-    <li><a href="how-it-works.html">How it Works</a></li>
-    <li><a href="faq.html">FAQ</a></li>
-    <li><a href="contact.html">Contact</a></li>
+       <!-- Navigation Menu -->
+     <ul class="nav-menu">
+    <!--<li><a href="/">Home</a></li> -->
+<li><a href="savings.html"nav-link">Personal Banking</a></li>
+<li><a href="products.html"nav-link">Business Banking</a></li>
+<li><a href="loans.html"nav-link">Loans</a></li>
+<li><a href="about.html" class="nav-link">About Us</a></li>
+<li><a href="contact.html" class="nav-link">Contact</a></li>
+<li><a href="faq.html" class="nav-link">FAQ</a></li>
 </ul>
 
         <!-- Header Buttons -->
-        <div class="header-buttons">
-          <a href="#" class="btn-outline"><i class="fas fa-user-plus"></i> Open Account</a>
-          <a href="#" class="btn-solid"><i class="fas fa-paper-plane"></i> Apply Now</a>
+        <!-- <div class="header-buttons">
+          <a href="contact" class="btn-outline"><i class="fas fa-user-plus"></i> Open Account</a>
+          <a href="contact" class="btn-solid"><i class="fas fa-paper-plane"></i> Apply Now</a>
         </div>
       </nav>
     </div>
-  </header>
+  </header> -->
 
 
-  <div class="loan-calculator">
-  <h2>Loan Calculator</h2>
-
-  <div class="input-group">
-    <label for="amount">Loan Amount ($)</label>
-    <input type="number" id="amount" placeholder="e.g. 10000" min="0">
+  <!-- Banner Header -->
+<section class="page-banking-banner">
+  <div class="banner-container">
+    <h1 class="banner-title">Loan Products</h1>
+    <p class="banner-sub">
+      Flexible credit solutions designed for micro businesses, SMEs, farmers, salary earners, and educational institutions.
+    </p>
   </div>
+</section>
 
-  <div class="input-group">
-    <label for="interest">Annual Interest Rate (%)</label>
-    <input type="number" id="interest" placeholder="e.g. 5.5" step="0.1" min="0">
+<!-- Loans Section -->
+<section class="accounts-section">
+  <div class="accounts-container">
+    
+    <h2 class="category-heading">Available Financing Options</h2>
+    <div class="accounts-grid">
+
+      <!-- 1. Micro Loan -->
+      <div class="account-card">
+        <div class="card-icon">💸</div>
+        <h3 class="account-title">Micro Loan</h3>
+        <p class="min-balance">Amount: <strong>Flexible Tenor</strong></p>
+        <p class="account-desc">
+          Quick financing for micro businesses, traders, artisans, and entrepreneurs with minimal collateral requirements.
+        </p>
+      </div>
+
+      <!-- 2. SME Loan -->
+      <div class="account-card">
+        <div class="card-icon">🏢</div>
+        <h3 class="account-title">SME Loan</h3>
+        <p class="min-balance">Amount: <strong>Business Expansion</strong></p>
+        <p class="account-desc">
+          Working capital and business expansion financing for Small and Medium Enterprises looking to scale operations.
+        </p>
+      </div>
+
+      <!-- 3. Special FED Loan -->
+      <div class="account-card">
+        <div class="card-icon">⭐</div>
+        <h3 class="account-title">Special FED Loan</h3>
+        <p class="min-balance">Category: <strong>Special Arrangement</strong></p>
+        <p class="account-desc">
+          Tailored financing designed for qualified customers under special funding arrangements and custom terms.
+        </p>
+      </div>
+
+      <!-- 4. School Loan -->
+      <div class="account-card">
+        <div class="card-icon">🏫</div>
+        <h3 class="account-title">School Loan</h3>
+        <p class="min-balance">Category: <strong>Educational Support</strong></p>
+        <p class="account-desc">
+          Designed to support private schools and educational institutions with timely operational funding and facility upgrades.
+        </p>
+      </div>
+
+      <!-- 5. Salary Loan -->
+      <div class="account-card">
+        <div class="card-icon">💳</div>
+        <h3 class="account-title">Salary Loan</h3>
+        <p class="min-balance">Category: <strong>Quick Cash</strong></p>
+        <p class="account-desc">
+          Fast loans for verified salary earners with convenient, flexible repayment plans structured around paydays.
+        </p>
+      </div>
+
+      <!-- 6. Cooperative Loan -->
+      <div class="account-card">
+        <div class="card-icon">🤝</div>
+        <h3 class="account-title">Cooperative Loan</h3>
+        <p class="min-balance">Category: <strong>Group Funding</strong></p>
+        <p class="account-desc">
+          Financing solutions tailored for registered cooperative societies and associations looking to empower members.
+        </p>
+      </div>
+
+      <!-- 7. Group Lending -->
+      <div class="account-card">
+        <div class="card-icon">👥</div>
+        <h3 class="account-title">Group Lending</h3>
+        <p class="min-balance">Category: <strong>Joint Support</strong></p>
+        <p class="account-desc">
+          Loan facilities customized for organized business groups and cooperative members with peer-backed structures.
+        </p>
+      </div>
+
+      <!-- 8. LPO Financing -->
+      <div class="account-card">
+        <div class="card-icon">📄</div>
+        <h3 class="account-title">LPO Financing</h3>
+        <p class="min-balance">Category: <strong>Contract Execution</strong></p>
+        <p class="account-desc">
+          Provides upfront financial support and backing for businesses executing verified Local Purchase Orders (LPOs).
+        </p>
+      </div>
+
+      <!-- 9. Agricultural Loan -->
+      <div class="account-card">
+        <div class="card-icon">🌾</div>
+        <h3 class="account-title">Agricultural Loan</h3>
+        <p class="min-balance">Category: <strong>Agro-Support</strong></p>
+        <p class="account-desc">
+          Financial support for farmers, agro-processors, and agricultural businesses to boost harvest and production capacity.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Centered Bottom Action Button -->
+    <div class="bottom-cta-wrapper">
+      <a href="#open-account" class="btn-main-cta">Open an Account Today &rarr;</a>
+    </div>
+
   </div>
-
-  <div class="input-group">
-    <label for="years">Loan Term (Years)</label>
-    <input type="number" id="years" placeholder="e.g. 3" min="1">
-  </div>
-
-  <button id="calculateBtn">Calculate Payment</button>
-
-  <div class="results" id="results" style="display: none;">
-    <h3>Results</h3>
-    <p>Monthly Payment: <strong id="monthlyPayment">$0.00</strong></p>
-    <p>Total Payment: <strong id="totalPayment">$0.00</strong></p>
-    <p>Total Interest: <strong id="totalInterest">$0.00</strong></p>
-  </div>
-</div>
+</section>
 
   <!-- ==========================================
          FOOTER
