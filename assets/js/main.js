@@ -145,3 +145,147 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* =========================================
+       MISSION / VISION
+       10 SECOND LOOP
+    ========================================= */
+
+    const slides =
+        document.querySelectorAll(".purpose-slide");
+
+    if (slides.length > 0) {
+
+        let currentSlide = 0;
+
+        const slideDuration = 10000;
+
+
+        slides.forEach((slide, index) => {
+
+            slide.classList.toggle(
+                "active",
+                index === 0
+            );
+
+        });
+
+
+        setInterval(() => {
+
+            slides[currentSlide]
+                .classList
+                .remove("active");
+
+
+            currentSlide =
+                (currentSlide + 1) % slides.length;
+
+
+            slides[currentSlide]
+                .classList
+                .add("active");
+
+        }, slideDuration);
+
+    }
+
+
+
+    /* =========================================
+       IMAGE POSITION ROTATION
+    ========================================= */
+
+    const images =
+        document.querySelectorAll(".purpose-image");
+
+    if (images.length === 3) {
+
+        /* Initial arrangement */
+
+        images[0].classList.add("position-left");
+
+        images[1].classList.add("position-center");
+
+        images[2].classList.add("position-right");
+
+
+        /* Rotate positions every 5 seconds */
+
+        setInterval(() => {
+
+            const leftImage =
+                document.querySelector(
+                    ".purpose-image.position-left"
+                );
+
+            const centerImage =
+                document.querySelector(
+                    ".purpose-image.position-center"
+                );
+
+            const rightImage =
+                document.querySelector(
+                    ".purpose-image.position-right"
+                );
+
+
+            /*
+             * LEFT → RIGHT
+             * CENTER → LEFT
+             * RIGHT → CENTER
+             */
+
+            leftImage.classList.remove(
+                "position-left"
+            );
+
+            leftImage.classList.add(
+                "position-right"
+            );
+
+
+            centerImage.classList.remove(
+                "position-center"
+            );
+
+            centerImage.classList.add(
+                "position-left"
+            );
+
+
+            rightImage.classList.remove(
+                "position-right"
+            );
+
+            rightImage.classList.add(
+                "position-center"
+            );
+
+        }, 5000);
+
+    }
+
+});
+
+// About us Lightweight Scroll Animation Trigger (Add inside <script> tag before </body>)
+document.addEventListener('DOMContentLoaded', () => {
+  const observerOptions = {
+    threshold: 0.15
+  };
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target); // Animates once on scroll
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.scroll-reveal').forEach(el => {
+    observer.observe(el);
+  });
+});

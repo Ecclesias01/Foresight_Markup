@@ -45,7 +45,7 @@
     <div class="container">
       <nav class="navbar">
         <!-- Logo -->
-        <a href="/" class="logo">
+        <a href="index.html" class="logo">
           <img src="assets/images/logo.png"
      alt="Foresight Microfinance Bank"
      class="logo-img">
@@ -63,10 +63,10 @@
 </ul>
 
         <!-- Header Buttons -->
-        <!-- <div class="header-buttons">
-          <a href="contact" class="btn-outline"><i class="fas fa-user-plus"></i> Open Account</a>
-          <a href="contact" class="btn-solid"><i class="fas fa-paper-plane"></i> Apply Now</a>
-        </div> -->
+        <div class="header-buttons">
+          <!-- <a href="contact" class="btn-outline"><i class="fas fa-user-plus"></i> Find Us</a> -->
+          <a href="https://www.google.com/maps/@6.6905043,3.3017905,3a,15y,50.27h,90.09t/data=!3m7!1e1!3m5!1skgNoQz2tNAK7kUEI8b3U0w!2e0!6shttps:%2F%2Fstreetviewpixels-pa.googleapis.com%2Fv1%2Fthumbnail%3Fcb_client%3Dmaps_sv.tactile%26w%3D900%26h%3D600%26pitch%3D-0.0851423906321429%26panoid%3DkgNoQz2tNAK7kUEI8b3U0w%26yaw%3D50.27124415513677!7i13312!8i6656?hl=en&entry=ttu&g_ep=EgoyMDI2MDgwNS4xIKXMDSoASAFQAw%3D%3D" class="btn-solid"><i class="fas fa-location-dot"></i> Find Us</a>
+        </div>
       </nav>
     </div>
   </header>
@@ -104,31 +104,31 @@
         <img src="assets/images/HO.png"
              alt="Foresight Building">
 
-        <div class="floating-card approval-card">
+        <!-- Card 1: Security / Trust -->
+<div class="floating-card approval-card">
+  <div class="card-header">
+    <div class="card-icon blue">
+      <i class="fas fa-shield-alt"></i>
+    </div>
+    <div class="card-text">
+      <h3>Trusted Banking</h3>
+      <!-- <p>Licensed & Secure</p> -->
+    </div>
+  </div>
+</div>
 
-            <div class="card-header">
-
-                <div class="card-icon blue">
-                    <i class="fas fa-shield-alt"></i>
-                </div>
-
-                <h3>Trusted Banking</h3>
-
-            </div>
-
-            <!-- <p>Decisions in under 24 hours</p> -->
-
-        </div>
-
-        <div class="floating-card interest-card">
-
-            <div class="card-header">
-
-                <div class="card-icon burgundy">
-                    <i class="fas fa-hand-holding-usd "></i>
-                </div>
-
-                <h3>Affordable Finance</h3>
+<!-- Card 2: Loan / Finance -->
+<div class="floating-card interest-card">
+  <div class="card-header">
+    <div class="card-icon burgundy">
+      <i class="fas fa-hand-holding-usd"></i>
+    </div>
+    <div class="card-text">
+      <h3>Affordable Finance</h3>
+      <!-- <p>Competitive Rates</p> -->
+    </div>
+  </div>
+</div>
 
             <!-- </div>
 
@@ -151,47 +151,100 @@
     <h2>Banking Built to Help You<br>You <span class="highlight">Reach Next Level</span></h2>
   </div>
 
-  <!-- Content Container -->
-  <div class="account-container">
-    
-    <!-- Left Column: Text & Actions -->
-    <div class="account-content">
-      <h3>Smarter Accounts for Your Big Ambitions</h3>
-      <p class="description">
-        Ditch the friction. Enjoy effortless, security-first banking tailored to your day-to-day lifestyle. 
-        Whether you are building wealth, making daily payments, or saving for what matters most, we provide the tools to make your money work harder.
-      </p>
+    <section class="purpose-section">
 
-      <ul class="account-links">
-        <li><a href="#">High-Yield Savings <span>&rarr;</span></a></li>
-        <li><a href="#">Zero-Fee Current Account <span>&rarr;</span></a></li>
-        <li><a href="#">Fixed-Growth Investment <span>&rarr;</span></a></li>
-      </ul>
+    <div class="container">
 
-      <div class="btn-group">
-        <a href="#" class="btn btn-primary">Get Started Today</a>
-        <a href="#" class="btn btn-secondary">Explore All Accounts</a>
-      </div>
+        <div class="purpose-layout">
+
+            <!-- =====================================
+                 LEFT: OUR PURPOSE
+            ====================================== -->
+
+            <div class="purpose-content">
+
+                <div class="purpose-card">
+
+                    <!-- STATIC -->
+                    <span class="purpose-label">
+                        OUR PURPOSE
+                    </span>
+
+
+                    <!-- MISSION / VISION SLIDER -->
+
+                    <div class="purpose-slider">
+
+                        <!-- Mission -->
+                        <div class="purpose-slide active">
+
+                            <h3>
+                                Our Mission
+                            </h3>
+
+                            <p>
+                                To deliver sustainable microfinance
+                                services to the people, with a view
+                                to thinking more about their future.
+                            </p>
+
+                        </div>
+
+
+                        <!-- Vision -->
+                        <div class="purpose-slide">
+
+                            <h3>
+                                Our Vision
+                            </h3>
+
+                            <p>
+                                To be the leading microfinance
+                                bank nationwide.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =====================================
+                 RIGHT: ROTATING IMAGE POSITIONS
+            ====================================== -->
+
+            <div class="purpose-images" id="purposeImages">
+
+                <div class="purpose-image">
+                    <img
+                        src="assets/images/FRS.png"
+                        alt="Foresight Microfinance"
+                    >
+                </div>
+
+                <div class="purpose-image">
+                    <img
+                        src="assets/images/FDS.png"
+                        alt="Foresight Customer"
+                    >
+                </div>
+
+                <div class="purpose-image">
+                    <img
+                        src="assets/images/FR4.png"
+                        alt="Foresight Business"
+                    >
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <!-- Right Column: Visual Showcase -->
-    <div class="account-visual">
-      <!-- Background Card 1 -->
-      <div class="bg-card bg-card-left">
-        <img src="assets/images/FRS.png" alt="Person" />
-      </div>
-
-      <!-- Background Card 2 -->
-      <div class="bg-card bg-card-right">
-        <img src="assets/images/FR4.png" alt="Person" />
-      </div>
-
-      <!-- Foreground Main Card -->
-      <div class="main-card">
-        <img src="assets/images/FDS.png" alt="Happy Customer" />
-      </div>
-      
-      
 </section>
   <!-- ==========================================
          STATS SECTION
