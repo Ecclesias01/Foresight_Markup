@@ -233,35 +233,20 @@ img {
   box-shadow: 0 4px 12px rgba(107, 26, 42, 0.3);
 }
 
-body{
-
-    opacity:0;
-
-    transform:translateY(40px);
-
-    animation:pageSlide .8s ease .4s forwards;
+body {
+    opacity: 0;
+    animation: pageSlide .8s ease .4s forwards;
 }
 
-@keyframes pageSlide{
-
-    from{
-
-        opacity:0;
-
-        transform:translateY(40px);
-
+@keyframes pageSlide {
+    from {
+        opacity: 0;
     }
 
-    to{
-
-        opacity:1;
-
-        transform:translateY(0);
-
+    to {
+        opacity: 1;
     }
-
 }
-
 /* ============================================
    HERO SECTION
 ============================================ */
@@ -423,103 +408,155 @@ body{
   box-shadow: 0 6px 20px rgba(107, 26, 42, 0.15);
 }
 
-/* ----- Hero Right / Floating Cards ----- */
+/* ============================================
+   HERO IMAGE + FLOATING CARDS
+============================================ */
+
 .hero-right {
-  flex: 1;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  min-width: 280px;
+    flex: 1;
+    min-width: 280px;
+    display: flex;
+    justify-content: center;
 }
 
-.hero-right img {
+.hero-image-wrapper {
+    position: relative;
     width: 100%;
-    max-width: 720px;
+    max-width: 800px;
+}
+
+.hero-image-wrapper img {
+    width: 100%;
     height: auto;
     display: block;
     border-radius: 24px;
 }
 
+
+/* Floating cards */
 .floating-card {
-  position: absolute;
-  background: var(--white);
-  border-radius: var(--border-radius-md);
-  padding: 8px 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.10);
-  backdrop-filter: blur(4px);
-  min-width: 0;
-  border: 2px solid rgba(107, 26, 42, 0.1);
-  border-left-width: 5px;
+    position: absolute;
+    z-index: 10;
+
+    background: var(--white);
+    color: #222;
+
+    padding: 10px 14px;
+
+    border: 2px solid rgba(107, 26, 42, 0.1);
+    border-left: 2px solid var(--blue-dark);
+    border-right: 2px solid var(--blue-dark);
+
+    border-radius: 12px;
+
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.10);
+
+    width: max-content;
+    display: block;
+
+    animation: floatingCard 4s ease-in-out infinite;
 }
 
+
+/* Trusted Banking */
 .approval-card {
     top: 30px;
-    left: -40px;
+    left: -30px;
 }
 
+
+/* Affordable Finance */
 .interest-card {
     bottom: 30px;
-    right: -40px;
+    right: -30px;
+
+    animation-delay: 2s;
 }
 
+
+/* Gentle floating movement */
+@keyframes floatingCard {
+    0%, 100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Card content */
 .card-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .card-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--white);
-  font-size: 0.85rem;
-  flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    max-width: 28px;
+
+    min-height: 28px;
+    max-height: 28px;
+
+    padding: 0;
+    margin: 0;
+
+    border-radius: 8px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    color: #fff;
+    font-size: 14px;
+
+    line-height: 1;
+    flex-shrink: 0;
 }
 
+.card-icon i {
+    display: inline-block;
+
+    width: auto;
+    height: auto;
+
+    padding: 0;
+    margin: 0;
+
+    font-size: 14px;
+    line-height: 1;
+
+    transform: none;
+}
 .card-icon.blue {
-  background: var(--blue-primary);
+    background: var(--blue-primary);
 }
 
 .card-icon.burgundy {
-  background: var(--burgundy);
+    background: var(--burgundy);
 }
 
 .floating-card h3 {
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin: 0;
 }
 
-.floating-card p {
-  font-size: 0.75rem;
-  color: var(--gray-mid);
-  margin: 0;
-}
-
-.floating-card {
-  animation: float 3s ease-in-out infinite;
-}
-
-.interest-card {
-  animation-delay: 1.5s; /* Makes the two cards move at different times */
-}
-
+/* Floating animation */
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
+    0%, 100% {
+        transform: translateY(0);
+    }
 
-  50% {
-    transform: translateY(-12px);
-  }
+    50% {
+        transform: translateY(-12px);
+    }
 }
-
-
 
 /* ACCOUNT SECTION */
 
@@ -572,14 +609,6 @@ body{
 
 /* =========================================
    MISSION & VISION
-========================================= */
-
-/* =========================================
-   PURPOSE SECTION
-========================================= */
-
-/* =========================================
-   PURPOSE SECTION
 ========================================= */
 
 .purpose-section {
