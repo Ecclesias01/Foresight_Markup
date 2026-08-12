@@ -214,57 +214,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
         /* Rotate positions every 5 seconds */
 
-        setInterval(() => {
+        // setInterval(() => {
 
-            const leftImage =
-                document.querySelector(
-                    ".purpose-image.position-left"
-                );
+        //     const leftImage =
+        //         document.querySelector(
+        //             ".purpose-image.position-left"
+        //         );
 
-            const centerImage =
-                document.querySelector(
-                    ".purpose-image.position-center"
-                );
+        //     const centerImage =
+        //         document.querySelector(
+        //             ".purpose-image.position-center"
+        //         );
 
-            const rightImage =
-                document.querySelector(
-                    ".purpose-image.position-right"
-                );
-
-
-            /*
-             * LEFT → RIGHT
-             * CENTER → LEFT
-             * RIGHT → CENTER
-             */
-
-            leftImage.classList.remove(
-                "position-left"
-            );
-
-            leftImage.classList.add(
-                "position-right"
-            );
+        //     const rightImage =
+        //         document.querySelector(
+        //             ".purpose-image.position-right"
+        //         );
 
 
-            centerImage.classList.remove(
-                "position-center"
-            );
+        //     /*
+        //      * LEFT → RIGHT
+        //      * CENTER → LEFT
+        //      * RIGHT → CENTER
+        //      */
 
-            centerImage.classList.add(
-                "position-left"
-            );
+        //     leftImage.classList.remove(
+        //         "position-left"
+        //     );
+
+        //     leftImage.classList.add(
+        //         "position-right"
+        //     );
 
 
-            rightImage.classList.remove(
-                "position-right"
-            );
+        //     centerImage.classList.remove(
+        //         "position-center"
+        //     );
 
-            rightImage.classList.add(
-                "position-center"
-            );
+        //     centerImage.classList.add(
+        //         "position-left"
+        //     );
 
-        }, 5000);
+
+        //     rightImage.classList.remove(
+        //         "position-right"
+        //     );
+
+        //     rightImage.classList.add(
+        //         "position-center"
+        //     );
+
+        // }, 5000);
 
     }
 
