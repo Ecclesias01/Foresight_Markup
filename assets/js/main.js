@@ -46,33 +46,39 @@ const observer = new IntersectionObserver((entries) => {
 counters.forEach(counter => observer.observe(counter));
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const track = document.getElementById("testimonialTrack");
-  
-  // 1. Clone cards to create a seamless infinite loop
+
+  if (!track) {
+    return;
+  }
+
+  // Clone cards to create a seamless infinite loop
   const cards = Array.from(track.children);
+
   cards.forEach((card) => {
     const clone = card.cloneNode(true);
     track.appendChild(clone);
   });
 
-  // 2. Auto-scroll configuration
-  let speed = 1; // Speed in pixels per frame (increase/decrease to adjust)
+  let speed = 1;
   let isHovered = false;
-  let animationFrameId;
 
   function scroll() {
+
     if (!isHovered) {
+
       track.scrollLeft += speed;
 
-      // When reaching half the track width (the start of cloned elements), reset to top seamlessly
       if (track.scrollLeft >= track.scrollWidth / 2) {
         track.scrollLeft = 0;
       }
+
     }
-    animationFrameId = requestAnimationFrame(scroll);
+
+    requestAnimationFrame(scroll);
   }
 
-  // 3. Pause auto-scroll on hover so users can comfortably read reviews
   track.addEventListener("mouseenter", () => {
     isHovered = true;
   });
@@ -80,11 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
   track.addEventListener("mouseleave", () => {
     isHovered = false;
   });
-
-  // 4. Mobile touch drag support
-  let isDown = false;
-  let startX;
-  let scrollLeft;
 
   track.addEventListener("touchstart", () => {
     isHovered = true;
@@ -94,41 +95,49 @@ document.addEventListener("DOMContentLoaded", () => {
     isHovered = false;
   });
 
-  // Start the auto-scroll animation
   scroll();
+
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+
   const form = document.getElementById("applyForm");
   const submitBtn = document.getElementById("submitBtn");
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault(); // Prevent page reload
+  if (!form || !submitBtn) {
+    return;
+  }
 
-    // Change button state to simulate sending
+  form.addEventListener("submit", (e) => {
+
+    e.preventDefault();
+
     const originalText = submitBtn.innerHTML;
+
     submitBtn.innerHTML = `<span>Submitting...</span>`;
     submitBtn.style.opacity = "0.7";
     submitBtn.disabled = true;
 
-    // Simulate API call / Network Delay
     setTimeout(() => {
-      // Success feedback
+
       submitBtn.innerHTML = `✓ Submitted Successfully!`;
-      submitBtn.style.background = "#10b981"; // Green color
+      submitBtn.style.background = "#10b981";
       submitBtn.style.opacity = "1";
 
-      // Reset form fields
       form.reset();
 
-      // Reset button back to default after 3 seconds
       setTimeout(() => {
+
         submitBtn.innerHTML = originalText;
         submitBtn.style.background = "var(--btn-gradient)";
         submitBtn.disabled = false;
+
       }, 3000);
+
     }, 1500);
+
   });
+
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -270,12 +279,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
-// About us Lightweight Scroll Animation Trigger (Add inside <script> tag before </body>)
-document.addEventListener("DOMContentLoaded", function () {
+/* =========================================
+   FORESIGHT PAGE LOADER
+========================================= */
+
+(function () {
 
   const loader = document.getElementById("page-loader");
   const progress = document.getElementById("loader-progress");
   const percent = document.getElementById("loader-percent");
+
+  if (!loader || !progress || !percent) {
+    return;
+  }
 
   let value = 0;
 
@@ -297,5 +313,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
   }, 20);
+
+})();
+
+/* =========================================
+   SCROLL REVEAL ANIMATION ABOUT US
+========================================= */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  const revealElements = document.querySelectorAll(".scroll-reveal");
+
+  if (revealElements.length === 0) {
+    return;
+  }
+
+  const revealObserver = new IntersectionObserver(
+    function (entries, observer) {
+
+      entries.forEach(function (entry) {
+
+        if (entry.isIntersecting) {
+
+          entry.target.classList.add("visible");
+
+          observer.unobserve(entry.target);
+
+        }
+
+      });
+
+    },
+    {
+      threshold: 0.15
+    }
+  );
+
+  revealElements.forEach(function (element) {
+    revealObserver.observe(element);
+  });
 
 });
