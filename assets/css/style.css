@@ -3407,10 +3407,11 @@ body {
 
 /* Logo */
 .loader-logo {
+  display: block;
   width: 85px;
   height: 85px;
   object-fit: contain;
-  margin-bottom: 18px;
+  margin: 0 auto 18px auto;
 }
 
 /* Brand name */
@@ -3439,7 +3440,7 @@ body {
   overflow: hidden;
 }
 
-/* RED → PURPLE → BLUE */
+/* Red → Purple → Blue */
 #loader-progress {
   width: 0%;
   height: 100%;
@@ -3452,18 +3453,14 @@ body {
   );
 
   border-radius: 20px;
-
   transition: width 0.1s linear;
 }
 
 /* Percentage */
 #loader-percent {
   margin-top: 13px;
-
   color: #123b6d;
-
   font-size: 14px;
   font-weight: 600;
-
   letter-spacing: 1px;
 }
