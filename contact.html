@@ -8,6 +8,9 @@
   <meta name="keywords" content="Microfinance Bank, Loans, Savings, SME Banking, Nigeria" />
   <meta name="author" content="Foresight Microfinance Bank Ltd" />
 
+    <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -157,28 +160,28 @@
 
       <!-- Right Column: Application Form -->
       <div class="form-card">
-        <h2 class="form-title">Apply Now</h2>
+        <h2 class="form-title">Send Us a Message</h2>
         
         <form id="applyForm">
           <div class="form-row">
             <div class="form-group">
               <label for="firstName">First Name</label>
-              <input type="text" id="firstName" placeholder="John" required>
+              <input type="text" id="firstName" required>
             </div>
             <div class="form-group">
               <label for="lastName">Last Name</label>
-              <input type="text" id="lastName" placeholder="Doe" required>
+              <input type="text" id="lastName" required>
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label for="email">Email</label>
-              <input type="email" id="email" placeholder="john@example.com" required>
+              <input type="email" id="email" required>
             </div>
             <div class="form-group">
               <label for="phone">Phone</label>
-              <input type="tel" id="phone" placeholder="+1 (555) 000-0000" required>
+              <input type="tel" id="phone" required>
             </div>
           </div>
 
@@ -186,7 +189,7 @@
             <label for="service">Service Interested In</label>
             <select id="service" required>
               <option value="" disabled selected>Select a service...</option>
-              <option value="savings">High-Yield Savings</option>
+              <option value="savings">Savings Account</option>
               <option value="current">Current Account</option>
               <option value="fixed-deposit">Fixed Deposit</option>
               <option value="salary-loan">Salary Loan</option>
@@ -261,6 +264,32 @@
       </div>
     </div>
   </footer>
+   <!-- Foresight Page Loader -->
+<div id="page-loader">
+  <div class="loader-content">
+
+    <img
+      src="/favicon.ico"
+      alt="Foresight Microfinance Bank"
+      class="loader-logo"
+    />
+
+    <div class="loader-text">
+      FORESIGHT
+    </div>
+
+    <div class="loader-tagline">
+      See further. Build bolder.
+    </div>
+
+    <div class="loader-bar">
+      <div id="loader-progress"></div>
+    </div>
+
+    <div id="loader-percent">0%</div>
+
+  </div>
+</div>
 <script src="assets/js/main.js"></script>
 </body>
 </html>

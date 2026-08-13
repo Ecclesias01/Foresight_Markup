@@ -3366,3 +3366,104 @@ body {
     text-align: center;
   }
 }
+
+
+/* =========================================
+   FORESIGHT PAGE LOADER
+========================================= */
+
+#page-loader {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 99999;
+
+  opacity: 1;
+  visibility: visible;
+
+  transition:
+    opacity 0.7s ease,
+    visibility 0.7s ease;
+}
+
+#page-loader.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Loader content */
+.loader-content {
+  width: min(360px, 80%);
+  text-align: center;
+}
+
+/* Logo */
+.loader-logo {
+  width: 85px;
+  height: 85px;
+  object-fit: contain;
+  margin-bottom: 18px;
+}
+
+/* Brand name */
+.loader-text {
+  color: #123b6d;
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  margin-bottom: 6px;
+}
+
+/* Tagline */
+.loader-tagline {
+  color: #6b7280;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  margin-bottom: 30px;
+}
+
+/* Progress bar background */
+.loader-bar {
+  width: 100%;
+  height: 6px;
+  background: #e9edf3;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* RED → PURPLE → BLUE */
+#loader-progress {
+  width: 0%;
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    #e31b23 0%,
+    #c026d3 50%,
+    #0057b8 100%
+  );
+
+  border-radius: 20px;
+
+  transition: width 0.1s linear;
+}
+
+/* Percentage */
+#loader-percent {
+  margin-top: 13px;
+
+  color: #123b6d;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  letter-spacing: 1px;
+}

@@ -271,21 +271,31 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // About us Lightweight Scroll Animation Trigger (Add inside <script> tag before </body>)
-document.addEventListener('DOMContentLoaded', () => {
-  const observerOptions = {
-    threshold: 0.15
-  };
+document.addEventListener("DOMContentLoaded", function () {
 
-  const observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target); // Animates once on scroll
-      }
-    });
-  }, observerOptions);
+  const loader = document.getElementById("page-loader");
+  const progress = document.getElementById("loader-progress");
+  const percent = document.getElementById("loader-percent");
 
-  document.querySelectorAll('.scroll-reveal').forEach(el => {
-    observer.observe(el);
-  });
+  let value = 0;
+
+  const loading = setInterval(function () {
+
+    value++;
+
+    progress.style.width = value + "%";
+    percent.textContent = value + "%";
+
+    if (value >= 100) {
+
+      clearInterval(loading);
+
+      setTimeout(function () {
+        loader.classList.add("hidden");
+      }, 300);
+
+    }
+
+  }, 20);
+
 });
