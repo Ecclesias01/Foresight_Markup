@@ -2,8 +2,8 @@
 session_start();
 
 // 1. CONFIGURATION & LOGIN CHECK
-$admin_user = 'admin';
-$admin_pass = 'Foresight2026!'; // Change password before production
+$admin_user = 'foresig2';
+$admin_pass = '+YtCpSbeo{dd34xp'; // Change password before production
 
 if (isset($_GET['action']) && $_GET['action'] === 'logout') {
     unset($_SESSION['admin_logged_in']);

@@ -1,9 +1,9 @@
 <?php
 // 1. DATABASE CONFIGURATION
 $db_host = 'localhost';
-$db_user = 'YOUR_DB_USER';
-$db_pass = 'YOUR_DB_PASSWORD';
-$db_name = 'YOUR_DB_NAME';
+$db_user = 'foresig2_foresig2';
+$db_pass = '+YtCpSbeo{dd34xp';
+$db_name = 'foresig2_bankdb';
 
 // Connect to MySQL
 $conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
