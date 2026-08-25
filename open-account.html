@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Opening Form - Foresight Microfinance Bank Ltd</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Client-side PDF Generation Engine -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+</head>
+<body class="bg-slate-100 py-10 px-4">
+
+  <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md border border-slate-200">
+    
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row justify-between items-center border-b pb-6 mb-6 gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Foresight Microfinance Bank Ltd.</h1>
+        <p class="text-xs text-slate-500 font-semibold">RC: 716052</p>
+        <h2 class="text-lg font-bold text-slate-700 mt-2 uppercase tracking-wide">Account Opening Form</h2>
+      </div>
+      
+      <!-- Passport Upload Box -->
+      <div class="w-36 h-44 border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center p-2 text-center bg-slate-50 relative overflow-hidden">
+        <img id="passportPreview" class="hidden absolute inset-0 w-full h-full object-cover">
+        <span id="passportLabel" class="text-xs text-slate-500 font-medium mb-2">Passport Photo *</span>
+        <input type="file" name="passport" id="passport" form="accountForm" accept="image/*" required onchange="previewImage(this, 'passportPreview', 'passportLabel')" class="text-xs text-slate-500 w-full file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+      </div>
+    </div>
+
+    <!-- MAIN FORM -->
+    <form id="accountForm" action="submit.php" method="POST" enctype="multipart/form-data" class="space-y-6">
+      
+      <!-- Account Type -->
+      <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
+        <label class="block text-xs font-semibold text-slate-700 uppercase">Account Type *</label>
+        <select name="account_type" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm bg-white">
+          <option value="">Select Account Type</option>
+          <option value="Savings Account">Savings Account</option>
+          <option value="Personal Banking">Personal Banking</option>
+          <option value="Cooperative Banking">Cooperative Banking</option>
+          <option value="Current Account">Current Account</option>
+        </select>
+      </div>
+
+      <!-- Section A: Personal Details -->
+      <div class="border-t pt-4">
+        <h3 class="font-bold text-slate-800 text-sm tracking-wider uppercase mb-3">(A.) Personal Details</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="md:col-span-2">
+            <label class="block text-xs font-medium text-slate-600">Surname (MR/MRS/MS/OTHERS) *</label>
+            <input type="text" name="surname" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Other Names *</label>
+            <input type="text" name="other_names" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">BVN *</label>
+            <input type="text" name="bvn" maxlength="11" pattern="\d{11}" placeholder="11 digits" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">NIN *</label>
+            <input type="text" name="nin" maxlength="11" pattern="\d{11}" placeholder="11 digits" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Sex *</label>
+            <select name="sex" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm bg-white">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Marital Status</label>
+            <select name="marital_status" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm bg-white">
+              <option value="Single">Single</option>
+              <option value="Married">Married</option>
+              <option value="Divorced">Divorced</option>
+              <option value="Widowed">Widowed</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Date of Birth *</label>
+            <input type="date" name="dob" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Nationality</label>
+            <input type="text" name="nationality" value="Nigerian" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">State of Origin</label>
+            <input type="text" name="state_of_origin" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-medium text-slate-600">Means of Identification *</label>
+            <select name="id_type" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm bg-white">
+              <option value="">Select ID Type</option>
+              <option value="International Passport">International Passport</option>
+              <option value="Drivers Licence">Drivers Licence</option>
+              <option value="NIN Card/Slip">NIN Card/Slip</option>
+              <option value="Voters Card">Voters Card</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mt-4 bg-slate-50 p-4 rounded-md border border-slate-200">
+          <label class="block text-xs font-semibold text-slate-700 uppercase">Upload Means of Identification *</label>
+          <span class="text-xs text-slate-500 block mb-2">Upload image of selected ID. Sent as separate attachment.</span>
+          <input type="file" name="id_card" id="id_card" accept="image/*" required class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Residential Address *</label>
+            <textarea name="residential_address" rows="2" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Correspondence Address (P.O. Box)</label>
+            <textarea name="correspondence_address" rows="2" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm"></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Mobile Phone *</label>
+            <input type="tel" name="mobile" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Office Phone</label>
+            <input type="tel" name="office_phone" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Email Address *</label>
+            <input type="email" name="email" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Occupation / Profession</label>
+            <input type="text" name="occupation" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Gross Annual Income</label>
+            <input type="text" name="income" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Name of Employer</label>
+            <input type="text" name="employer" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <label class="block text-xs font-medium text-slate-600">Address of Employer</label>
+          <input type="text" name="employer_address" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+        </div>
+      </div>
+
+      <!-- Section B: If Married -->
+      <div class="border-t pt-4">
+        <h3 class="font-bold text-slate-800 text-sm tracking-wider uppercase mb-3">(B.) IF MARRIED</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Name of Spouse</label>
+            <input type="text" name="spouse_name" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Occupation / Profession</label>
+            <input type="text" name="spouse_occupation" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Telephone</label>
+            <input type="tel" name="spouse_phone" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+        </div>
+      </div>
+
+      <!-- Section C: Next of Kin -->
+      <div class="border-t pt-4">
+        <h3 class="font-bold text-slate-800 text-sm tracking-wider uppercase mb-3">(C.) NEXT OF KIN</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Surname *</label>
+            <input type="text" name="nok_surname" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Other Names *</label>
+            <input type="text" name="nok_other_names" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Relationship *</label>
+            <input type="text" name="nok_relationship" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-600">Telephone *</label>
+            <input type="tel" name="nok_phone" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs font-medium text-slate-600">Contact Address *</label>
+            <input type="text" name="nok_address" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+          </div>
+        </div>
+      </div>
+
+      <!-- Declaration & Signature -->
+      <div class="border-t pt-4 space-y-4">
+        <h3 class="font-bold text-slate-800 text-sm tracking-wider uppercase">Declaration</h3>
+        <div class="space-y-3 bg-blue-50 p-4 rounded-md border border-blue-100">
+          <div class="flex items-start gap-3">
+            <input type="checkbox" id="declaration" name="declaration" required class="mt-1 h-4 w-4 text-blue-600 border-slate-300 rounded">
+            <label for="declaration" class="text-xs text-slate-700 leading-relaxed">
+              I/We wish to open an account and confirm that I / We have read and understand the rule and regulations of operating the scheme.
+            </label>
+          </div>
+          
+          <div class="pt-2 border-t border-blue-200">
+            <label class="block text-xs font-semibold text-slate-700 uppercase">Customer Full Name (Declaration) *</label>
+            <input type="text" name="declaration_full_name" placeholder="Enter your full legal name" required class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm bg-white">
+          </div>
+        </div>
+
+        <div class="bg-slate-50 p-4 rounded-md border border-slate-200">
+          <label class="block text-xs font-semibold text-slate-700 uppercase">Upload Signature *</label>
+          <span class="text-xs text-slate-500 block mb-2">Upload a clear photo or scan of your signature on white paper.</span>
+          <input type="file" name="signature" id="signature" accept="image/*" required class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="pt-4 flex flex-col sm:flex-row items-center justify-end gap-3">
+        <button type="button" onclick="generatePdfPreview()" class="w-full sm:w-auto px-5 py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold text-sm rounded-lg border border-slate-300 transition">
+          📄 Preview Application
+        </button>
+        <button type="button" onclick="submitDirectly()" class="w-full sm:w-auto px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-lg shadow transition">
+          Submit Application
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- PREVIEW MODAL -->
+  <div id="previewModal" class="fixed inset-0 bg-slate-900 bg-opacity-80 flex items-center justify-center p-4 hidden z-50">
+    <div class="bg-white rounded-xl max-w-4xl w-full h-[90vh] flex flex-col p-6 shadow-2xl border border-slate-200">
+      <div class="pb-4 border-b flex justify-between items-center">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800">Application Document Preview</h2>
+          <p class="text-xs text-slate-500">Custom Bank Use lines on a single A4 page.</p>
+        </div>
+        <span class="text-xs bg-blue-50 text-blue-700 font-semibold px-3 py-1 rounded-full border border-blue-200">Single Page Layout</span>
+      </div>
+
+      <!-- PDF Embedded Container -->
+      <div class="flex-1 my-4 bg-slate-100 rounded-lg overflow-hidden border border-slate-300">
+        <iframe id="pdfFrame" class="w-full h-full border-0"></iframe>
+      </div>
+
+      <div class="pt-2 border-t flex flex-col sm:flex-row gap-4 justify-end">
+        <button type="button" onclick="closePreview()" class="px-6 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold rounded-lg transition text-sm">
+          ✏️ Edit Details
+        </button>
+        <button type="button" onclick="submitDirectly()" class="px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-lg shadow transition text-sm">
+          ✅ Submit Application
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function previewImage(input, previewId, labelId) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.getElementById(previewId);
+          img.src = e.target.result;
+          img.classList.remove('hidden');
+          document.getElementById(labelId).classList.add('hidden');
+        }
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) resolve(null);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    // Function to remove background exclusively from the uploaded customer signature image
+    function removeSignatureBackground(file) {
+      return new Promise((resolve, reject) => {
+        if (!file) return resolve(null);
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            ctx.drawImage(img, 0, 0);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i];
+              const g = data[i + 1];
+              const b = data[i + 2];
+
+              // Make white and off-white background pixels transparent
+              if (r > 190 && g > 190 && b > 190) {
+                data[i + 3] = 0;
+              }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+            resolve(canvas.toDataURL('image/png'));
+          };
+
+          img.onerror = (err) => reject(err);
+        };
+
+        reader.onerror = (err) => reject(err);
+      });
+    }
+
+    function submitDirectly() {
+      const form = document.getElementById('accountForm');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      form.submit();
+    }
+
+    async function generatePdfPreview() {
+      const form = document.getElementById('accountForm');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
+      const formData = new FormData(form);
+
+      const passportFile = document.getElementById('passport').files[0];
+      const signatureFile = document.getElementById('signature').files[0];
+
+      // Standard Base64 for Passport, Background Removal applied ONLY to Signature
+      const passportBase64 = await fileToBase64(passportFile);
+      const signatureBase64 = await removeSignatureBackground(signatureFile);
+
+      const selectedId = formData.get('id_type');
+      const isIntPassport = selectedId === 'International Passport' ? '[ X ]' : '[   ]';
+      const isDriverLicence = selectedId === 'Drivers Licence' ? '[ X ]' : '[   ]';
+      const isOthersId = (selectedId !== 'International Passport' && selectedId !== 'Drivers Licence') ? '[ X ]' : '[   ]';
+
+      const docDefinition = {
+        pageSize: 'A4',
+        pageMargins: [25, 12, 25, 12],
+        content: [
+          // Header Row - Fixed Width Alignment
+          {
+            columns: [
+              {
+                width: 140,
+                stack: [
+                  { text: 'Foresight', style: 'bankTitle' },
+                  { text: 'Microfinance Bank Ltd.', style: 'bankSub' }
+                ]
+              },
+              {
+                width: '*',
+                text: 'ACCOUNT OPENING FORM',
+                style: 'formHeaderTitle',
+                alignment: 'center',
+                margin: [0, 15, 0, 0]
+              },
+              {
+                width: 75,
+                alignment: 'right',
+                table: {
+                  widths: [70],
+                  heights: [80],
+                  body: [[
+                    passportBase64 ? { image: passportBase64, width: 68, height: 78 } : { text: '[ Passport Photo ]', alignment: 'center', fontSize: 7, margin: [0, 25, 0, 0] }
+                  ]]
+                }
+              }
+            ],
+            margin: [0, 0, 0, 6]
+          },
+          { text: ' ', margin: [0, 1] },
+
+          // Account Type Box
+          {
+            table: {
+              widths: [120, '*'],
+              body: [[
+                { text: 'ACCOUNT TYPE:', style: 'boxLabel' },
+                { text: formData.get('account_type') || '', style: 'boxValue' }
+              ]]
+            },
+            layout: 'grid',
+            margin: [0, 0, 0, 4]
+          },
+
+          // Section A: Personal Details Table
+          { text: '(A.) PERSONAL DETAILS', style: 'sectionHeader' },
+          {
+            table: {
+              widths: [135, '*', 100, '*'],
+              body: [
+                [
+                  { text: 'SURNAME (MR/MRS/MS/OTHERS):', style: 'boxLabel' },
+                  { text: formData.get('surname') || '', style: 'boxValue', colSpan: 3 }, '', ''
+                ],
+                [
+                  { text: 'OTHER NAMES:', style: 'boxLabel' },
+                  { text: formData.get('other_names') || '', style: 'boxValue' },
+                  { text: 'SEX:', style: 'boxLabel' },
+                  { text: formData.get('sex') || '', style: 'boxValue' }
+                ],
+                [
+                  { text: 'BVN:', style: 'boxLabel' },
+                  { text: formData.get('bvn') || '', style: 'boxValue' },
+                  { text: 'NIN:', style: 'boxLabel' },
+                  { text: formData.get('nin') || '', style: 'boxValue' }
+                ],
+                [
+                  { text: 'MARITAL STATUS:', style: 'boxLabel' },
+                  { text: formData.get('marital_status') || '', style: 'boxValue' },
+                  { text: 'DATE OF BIRTH:', style: 'boxLabel' },
+                  { text: formData.get('dob') || '', style: 'boxValue' }
+                ],
+                [
+                  { text: 'NATIONALITY:', style: 'boxLabel' },
+                  { text: formData.get('nationality') || '', style: 'boxValue' },
+                  { text: 'STATE OF ORIGIN:', style: 'boxLabel' },
+                  { text: formData.get('state_of_origin') || '', style: 'boxValue' }
+                ],
+                [
+                  { text: 'MEANS OF IDENTIFICATION:', style: 'boxLabel' },
+                  { text: `Int\'l Passport ${isIntPassport}   Driver\'s Licence ${isDriverLicence}   Others ${isOthersId}`, style: 'boxValue', colSpan: 3 }, '', ''
+                ],
+                [
+                  { text: 'RESIDENTIAL ADDRESS:', style: 'boxLabel' },
+                  { text: formData.get('residential_address') || '', style: 'boxValue', colSpan: 3 }, '', ''
+                ],
+                [
+                  { text: 'CORRESPONDENCE ADDRESS:', style: 'boxLabel' },
+                  { text: formData.get('correspondence_address') || 'N/A', style: 'boxValue', colSpan: 3 }, '', ''
+                ],
+                [
+                  { text: 'MOBILE PHONE:', style: 'boxLabel' },
+                  { text: formData.get('mobile') || '', style: 'boxValue' },
+                  { text: 'OFFICE PHONE:', style: 'boxLabel' },
+                  { text: formData.get('office_phone') || 'N/A', style: 'boxValue' }
+                ],
+                [
+                  { text: 'EMAIL ADDRESS:', style: 'boxLabel' },
+                  { text: formData.get('email') || '', style: 'boxValue', colSpan: 3 }, '', ''
+                ],
+                [
+                  { text: 'OCCUPATION/PROFESSION:', style: 'boxLabel' },
+                  { text: formData.get('occupation') || '', style: 'boxValue' },
+                  { text: 'GROSS ANNUAL INCOME:', style: 'boxLabel' },
+                  { text: formData.get('income') || 'N/A', style: 'boxValue' }
+                ],
+                [
+                  { text: 'NAME OF EMPLOYER:', style: 'boxLabel' },
+                  { text: formData.get('employer') || 'N/A', style: 'boxValue', colSpan: 3 }, '', ''
+                ],
+                [
+                  { text: 'ADDRESS OF EMPLOYER:', style: 'boxLabel' },
+                  { text: formData.get('employer_address') || 'N/A', style: 'boxValue', colSpan: 3 }, '', ''
+                ]
+              ]
+            },
+            layout: 'grid',
+            margin: [0, 0, 0, 4]
+          },
+
+          // Section B: If Married Table
+          { text: '(B.) IF MARRIED', style: 'sectionHeader' },
+          {
+            table: {
+              widths: [135, '*', 100, '*'],
+              body: [
+                [
+                  { text: 'NAME OF SPOUSE:', style: 'boxLabel' },
+                  { text: formData.get('spouse_name') || 'N/A', style: 'boxValue', colSpan: 3 }, '', ''
+                ],
+                [
+                  { text: 'OCCUPATION/PROFESSION:', style: 'boxLabel' },
+                  { text: formData.get('spouse_occupation') || 'N/A', style: 'boxValue' },
+                  { text: 'TELEPHONE:', style: 'boxLabel' },
+                  { text: formData.get('spouse_phone') || 'N/A', style: 'boxValue' }
+                ]
+              ]
+            },
+            layout: 'grid',
+            margin: [0, 0, 0, 4]
+          },
+
+          // Section C: Next of Kin Table
+          { text: '(C.) NEXT OF KIN', style: 'sectionHeader' },
+          {
+            table: {
+              widths: [135, '*', 100, '*'],
+              body: [
+                [
+                  { text: 'SURNAME:', style: 'boxLabel' },
+                  { text: formData.get('nok_surname') || '', style: 'boxValue' },
+                  { text: 'OTHER NAMES:', style: 'boxLabel' },
+                  { text: formData.get('nok_other_names') || '', style: 'boxValue' }
+                ],
+                [
+                  { text: 'RELATIONSHIP:', style: 'boxLabel' },
+                  { text: formData.get('nok_relationship') || '', style: 'boxValue' },
+                  { text: 'TELEPHONE:', style: 'boxLabel' },
+                  { text: formData.get('nok_phone') || '', style: 'boxValue' }
+                ],
+                [
+                  { text: 'CONTACT ADDRESS:', style: 'boxLabel' },
+                  { text: formData.get('nok_address') || '', style: 'boxValue', colSpan: 3 }, '', ''
+                ]
+              ]
+            },
+            layout: 'grid',
+            margin: [0, 0, 0, 4]
+          },
+
+          // Declaration & Signature Table
+          { text: 'DECLARATION', style: 'sectionHeader' },
+          {
+            table: {
+              widths: ['*'],
+              body: [
+                [
+                  {
+                    stack: [
+                      { text: 'I/We wish to open an account and confirm that I / We have read and understand the rule and regulations of operating the scheme.', style: 'declarationText' },
+                      { text: `Declared by: ${formData.get('declaration_full_name') || ''}`, style: 'declarationName', margin: [0, 2, 0, 0] }
+                    ]
+                  }
+                ]
+              ]
+            },
+            layout: 'grid',
+            margin: [0, 0, 0, 4]
+          },
+
+          // Signature Right Aligned
+          {
+            columns: [
+              { text: '' },
+              signatureBase64 ? [
+                { text: 'Customer Signature:', style: 'boxLabel', alignment: 'right' },
+                { image: signatureBase64, width: 85, height: 24, alignment: 'right' }
+              ] : { text: 'Customer Signature: ____________________', style: 'boxLabel', alignment: 'right', margin: [0, 4, 0, 0] }
+            ],
+            margin: [0, 0, 0, 4]
+          },
+
+          // FOR BANK USE SECTION
+          { text: 'FOR BANK USE', style: 'forBankUseHeader', alignment: 'center', margin: [0, 6, 0, 6] },
+          {
+            stack: [
+              // 1. Account Opening Officer
+              {
+                table: {
+                  widths: [115, '*'],
+                  body: [[
+                    { text: 'Account Opening Officer:', style: 'bankLineLabel' },
+                    { text: '', style: 'bankLineValue' }
+                  ]]
+                },
+                layout: {
+                  hLineWidth: (i, node) => (i === 1 ? 0.5 : 0),
+                  vLineWidth: () => 0,
+                  hLineColor: () => '#94a3b8'
+                },
+                margin: [0, 0, 0, 8]
+              },
+
+              // 2. CSO
+              {
+                table: {
+                  widths: [115, '*'],
+                  body: [[
+                    { text: 'CSO:', style: 'bankLineLabel' },
+                    { text: '', style: 'bankLineValue' }
+                  ]]
+                },
+                layout: {
+                  hLineWidth: (i, node) => (i === 1 ? 0.5 : 0),
+                  vLineWidth: () => 0,
+                  hLineColor: () => '#94a3b8'
+                },
+                margin: [0, 0, 0, 8]
+              },
+
+              // 3. Opening Amount & BOM's Approval
+              {
+                columns: [
+                  {
+                    table: {
+                      widths: [80, '*'],
+                      body: [[
+                        { text: 'Opening Amount:', style: 'bankLineLabel' },
+                        { text: '', style: 'bankLineValue' }
+                      ]]
+                    },
+                    layout: {
+                      hLineWidth: (i, node) => (i === 1 ? 0.5 : 0),
+                      vLineWidth: () => 0,
+                      hLineColor: () => '#94a3b8'
+                    }
+                  },
+                  {
+                    table: {
+                      widths: [80, '*'],
+                      body: [[
+                        { text: 'BOM\'s Approval:', style: 'bankLineLabel' },
+                        { text: '', style: 'bankLineValue' }
+                      ]]
+                    },
+                    layout: {
+                      hLineWidth: (i, node) => (i === 1 ? 0.5 : 0),
+                      vLineWidth: () => 0,
+                      hLineColor: () => '#94a3b8'
+                    }
+                  }
+                ],
+                margin: [0, 0, 0, 8]
+              },
+
+              // 4. TRANS. I.D. & Acct. No.
+              {
+                columns: [
+                  {
+                    table: {
+                      widths: [80, '*'],
+                      body: [[
+                        { text: 'TRANS. I.D.:', style: 'bankLineLabel' },
+                        { text: '', style: 'bankLineValue' }
+                      ]]
+                    },
+                    layout: {
+                      hLineWidth: (i, node) => (i === 1 ? 0.5 : 0),
+                      vLineWidth: () => 0,
+                      hLineColor: () => '#94a3b8'
+                    }
+                  },
+                  {
+                    table: {
+                      widths: [80, '*'],
+                      body: [[
+                        { text: 'Acct. No.:', style: 'bankLineLabel' },
+                        { text: '', style: 'bankLineValue' }
+                      ]]
+                    },
+                    layout: {
+                      hLineWidth: (i, node) => (i === 1 ? 0.5 : 0),
+                      vLineWidth: () => 0,
+                      hLineColor: () => '#94a3b8'
+                    }
+                  }
+                ],
+                margin: [0, 0, 0, 16]
+              },
+
+              // 5. Sign / Date (Centered Bottom Border Box)
+              {
+                columns: [
+                  { text: '', width: '*' },
+                  {
+                    width: 180,
+                    stack: [
+                      {
+                        table: {
+                          widths: [180],
+                          body: [[
+                            { text: 'Sign / Date', alignment: 'center', style: 'bankLineLabel' }
+                          ]]
+                        },
+                        layout: {
+                          hLineWidth: (i, node) => (i === 0 ? 0.5 : 0),
+                          vLineWidth: () => 0,
+                          hLineColor: () => '#475569'
+                        }
+                      }
+                    ]
+                  },
+                  { text: '', width: '*' }
+                ],
+                margin: [0, 14, 0, 0]
+              }
+            ]
+          }
+        ],
+        styles: {
+          bankTitle: { fontSize: 15, bold: true, color: '#1e293b' },
+          bankSub: { fontSize: 8, bold: true, color: '#475569' },
+          formHeaderTitle: { fontSize: 11, bold: true, color: '#0f172a', margin: [0, 4, 0, 0] },
+          sectionHeader: { fontSize: 8.5, bold: true, color: '#0f172a', margin: [0, 1, 0, 1] },
+          boxLabel: { fontSize: 7.5, bold: true, color: '#334155' },
+          boxValue: { fontSize: 8, bold: true, color: '#000000' },
+          declarationText: { fontSize: 7, italic: true, color: '#1e293b' },
+          declarationName: { fontSize: 7.5, bold: true, color: '#0f172a' },
+          forBankUseHeader: { fontSize: 9.5, bold: true, textDecoration: 'underline', color: '#0f172a' },
+          bankLineLabel: { fontSize: 8, bold: true, color: '#1e293b' },
+          bankLineValue: { fontSize: 8, margin: [0, 0, 0, 2] }
+        }
+      };
+
+      pdfMake.createPdf(docDefinition).getDataUrl((dataUrl) => {
+        document.getElementById('pdfFrame').src = dataUrl;
+        document.getElementById('previewModal').classList.remove('hidden');
+      });
+    }
+
+    function closePreview() {
+      document.getElementById('previewModal').classList.add('hidden');
+    }
+  </script>
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form');
+  const bvnInput = document.querySelector('input[name="bvn"]');
+  const ninInput = document.querySelector('input[name="nin"]');
+
+  // Restrict BVN and NIN inputs to numbers only and max 11 digits
+  [bvnInput, ninInput].forEach(input => {
+    if (!input) return;
+    input.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 11);
+    });
+  });
+
+  // Validate on Form Submission
+  form.addEventListener('submit', (e) => {
+    if (bvnInput && bvnInput.value.length !== 11) {
+      alert('Please enter a valid 11-digit BVN.');
+      bvnInput.focus();
+      e.preventDefault();
+      return;
+    }
+
+    if (ninInput && ninInput.value.length !== 11) {
+      alert('Please enter a valid 11-digit NIN.');
+      ninInput.focus();
+      e.preventDefault();
+      return;
+    }
+  });
+});
+</script>
+</body>
+</html>
