@@ -1,184 +1,241 @@
 <?php
-// 1. DATABASE CONFIGURATION
-$db_host = 'localhost';
-$db_user = 'foresig2_foresig2';
-$db_pass = '+YtCpSbeo{dd34xp';
-$db_name = 'foresig2_bankdb';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// Connect to MySQL
-$conn = new mysqli($db_host, $db_user, $db_pass, $db_name);
+// Include configuration file (stores database and SMTP credentials securely)
+require '/home/foresig2/public_html/db_config.php';
+
+// Include PHPMailer classes using your exact folder path
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require '/home/foresig2/public_html/phpmailer/Exception.php';
+require '/home/foresig2/public_html/phpmailer/PHPMailer.php';
+require '/home/foresig2/public_html/phpmailer/SMTP.php';
+
+// Connect to Database using constants from db_config.php
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 if ($conn->connect_error) {
     die("Database Connection Failed: " . $conn->connect_error);
 }
 
-// 2. HELPER: INPUT SANITIZATION
-function sanitize($data) {
-    return htmlspecialchars(stripslashes(trim($data ?? '')));
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // 1. Sanitize and Collect All Text Inputs
+    $account_type           = trim($_POST['account_type'] ?? '');
+    $surname                = trim($_POST['surname'] ?? '');
+    $other_names            = trim($_POST['other_names'] ?? '');
+    $sex                    = trim($_POST['sex'] ?? '');
+    $marital_status         = trim($_POST['marital_status'] ?? '');
+    $dob                    = trim($_POST['dob'] ?? '');
+    $nationality            = trim($_POST['nationality'] ?? '');
+    $state_of_origin        = trim($_POST['state_of_origin'] ?? '');
+    $residential_address    = trim($_POST['residential_address'] ?? '');
+    $correspondence_address = trim($_POST['correspondence_address'] ?? '');
+    $bvn                    = trim($_POST['bvn'] ?? '');
+    $nin                    = trim($_POST['nin'] ?? '');
+    $id_type                = trim($_POST['id_type'] ?? '');
+    $mobile                 = trim($_POST['mobile'] ?? '');
+    $email                  = trim($_POST['email'] ?? '');
+    
+    // Employment & Income Details
+    $occupation             = trim($_POST['occupation'] ?? '');
+    $gross_income           = trim($_POST['gross_income'] ?? '');
+    $employer_name          = trim($_POST['employer_name'] ?? '');
+    $employer_address       = trim($_POST['employer_address'] ?? '');
+    $office_phone           = trim($_POST['office_phone'] ?? '');
 
-// 3. CAPTURE & SANITIZE FORM INPUTS
-$account_type           = sanitize($_POST['account_type']);
-$surname                = sanitize($_POST['surname']);
-$other_names            = sanitize($_POST['other_names']);
-$bvn                    = sanitize($_POST['bvn']);
-$nin                    = sanitize($_POST['nin']);
-$sex                    = sanitize($_POST['sex']);
-$marital_status         = sanitize($_POST['marital_status']);
-$dob                    = sanitize($_POST['dob']);
-$nationality            = sanitize($_POST['nationality']);
-$state_of_origin        = sanitize($_POST['state_of_origin']);
-$id_type                = sanitize($_POST['id_type']);
-$residential_address    = sanitize($_POST['residential_address']);
-$correspondence_address = sanitize($_POST['correspondence_address']);
-$mobile                 = sanitize($_POST['mobile']);
-$office_phone           = sanitize($_POST['office_phone']);
-$email                  = sanitize($_POST['email']);
-$occupation             = sanitize($_POST['occupation']);
-$income                 = sanitize($_POST['income']);
-$employer               = sanitize($_POST['employer']);
-$employer_address       = sanitize($_POST['employer_address']);
-$spouse_name            = sanitize($_POST['spouse_name']);
-$spouse_occupation      = sanitize($_POST['spouse_occupation']);
-$spouse_phone           = sanitize($_POST['spouse_phone']);
-$nok_surname            = sanitize($_POST['nok_surname']);
-$nok_other_names        = sanitize($_POST['nok_other_names']);
-$nok_relationship       = sanitize($_POST['nok_relationship']);
-$nok_phone              = sanitize($_POST['nok_phone']);
-$nok_address            = sanitize($_POST['nok_address']);
-$declaration_full_name  = sanitize($_POST['declaration_full_name']);
+    // Spouse Details (If Married)
+    $spouse_name            = trim($_POST['spouse_name'] ?? '');
+    $spouse_occ             = trim($_POST['spouse_occ'] ?? '');
+    $spouse_phone           = trim($_POST['spouse_phone'] ?? '');
 
-// 4. FILE UPLOAD HANDLING
-$upload_dir = __DIR__ . '/uploads/';
-if (!file_exists($upload_dir)) {
-    mkdir($upload_dir, 0755, true);
-}
+    // Next of Kin Details
+    $nok_surname            = trim($_POST['nok_surname'] ?? '');
+    $nok_other_names        = trim($_POST['nok_other_names'] ?? '');
+    $nok_relationship       = trim($_POST['nok_relationship'] ?? '');
+    $nok_phone              = trim($_POST['nok_phone'] ?? '');
+    $nok_address            = trim($_POST['nok_address'] ?? '');
 
-$uploaded_files = [];
-$allowed_extensions = ['jpg', 'jpeg', 'png', 'pdf'];
+    // 2. Handle File Uploads with Auto-Orientation Support for Portraits
+    $upload_dir = 'uploads/';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
 
-function handle_upload($file_key, $prefix, $upload_dir, $allowed_extensions) {
-    if (isset($_FILES[$file_key]) && $_FILES[$file_key]['error'] === UPLOAD_ERR_OK) {
-        $file_tmp  = $_FILES[$file_key]['tmp_name'];
-        $file_name = $_FILES[$file_key]['name'];
-        $ext       = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+    function uploadFile($fileKey, $upload_dir) {
+        if (isset($_FILES[$fileKey]) && $_FILES[$fileKey]['error'] === UPLOAD_ERR_OK) {
+            $fileTmpPath = $_FILES[$fileKey]['tmp_name'];
+            $fileName = $_FILES[$fileKey]['name'];
+            $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+            
+            $newFileName = $fileKey . '_' . time() . '_' . mt_rand(1000, 9999) . '.' . $fileExtension;
+            $dest_path = $upload_dir . $newFileName;
 
-        if (in_array($ext, $allowed_extensions)) {
-            $new_name = $prefix . '_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
-            $destination = $upload_dir . $new_name;
-            if (move_uploaded_file($file_tmp, $destination)) {
-                return [
-                    'path' => $destination,
-                    'name' => $new_name
-                ];
+            // Auto-correct phone/camera rotation metadata for JPEG passport uploads
+            if (in_array($fileExtension, ['jpg', 'jpeg']) && function_exists('exif_read_data')) {
+                $exif = @exif_read_data($fileTmpPath);
+                if ($exif && isset($exif['Orientation'])) {
+                    $image = imagecreatefromjpeg($fileTmpPath);
+                    $rotated = false;
+                    switch ($exif['Orientation']) {
+                        case 3:
+                            $image = imagerotate($image, 180, 0);
+                            $rotated = true;
+                            break;
+                        case 6:
+                            $image = imagerotate($image, -90, 0);
+                            $rotated = true;
+                            break;
+                        case 8:
+                            $image = imagerotate($image, 90, 0);
+                            $rotated = true;
+                            break;
+                    }
+                    if ($rotated) {
+                        imagejpeg($image, $dest_path);
+                        imagedestroy($image);
+                        return $newFileName;
+                    }
+                }
+            }
+
+            // Standard upload fallback
+            if (move_uploaded_file($fileTmpPath, $dest_path)) {
+                return $newFileName;
             }
         }
+        return null;
     }
-    return null;
-}
 
-$passport_file  = handle_upload('passport', 'passport', $upload_dir, $allowed_extensions);
-$id_card_file   = handle_upload('id_card', 'id_card', $upload_dir, $allowed_extensions);
-$signature_file = handle_upload('signature', 'signature', $upload_dir, $allowed_extensions);
+    $passport_file  = uploadFile('passport', $upload_dir);
+    $id_card_file   = uploadFile('id_card', $upload_dir);
+    $signature_file = uploadFile('signature', $upload_dir);
 
-$passport_path  = $passport_file['name'] ?? null;
-$id_card_path   = $id_card_file['name'] ?? null;
-$signature_path = $signature_file['name'] ?? null;
+    // 3. Prepare Database Statement
+    $sql = "INSERT INTO account_applications (
+        account_type, surname, other_names, sex, marital_status, dob, nationality, 
+        state_of_origin, residential_address, bvn, nin, id_type, mobile, email, 
+        occupation, gross_income, employer_name, employer_address,
+        spouse_name, spouse_occ, spouse_phone,
+        nok_surname, nok_other_names, nok_relationship, nok_phone, nok_address, 
+        passport_file, id_card_file, signature_file, office_phone, correspondence_address
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-// 5. INSERT INTO MYSQL DATABASE
-$stmt = $conn->prepare("INSERT INTO account_applications (
-    account_type, surname, other_names, bvn, nin, sex, marital_status, dob, nationality, 
-    state_of_origin, id_type, residential_address, correspondence_address, mobile, 
-    office_phone, email, occupation, income, employer, employer_address, spouse_name, 
-    spouse_occupation, spouse_phone, nok_surname, nok_other_names, nok_relationship, 
-    nok_phone, nok_address, declaration_full_name, passport_file, id_card_file, signature_file
-) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-$stmt->bind_param(
-    "ssssssssssssssssssssssssssssssss",
-    $account_type, $surname, $other_names, $bvn, $nin, $sex, $marital_status, $dob, $nationality,
-    $state_of_origin, $id_type, $residential_address, $correspondence_address, $mobile,
-    $office_phone, $email, $occupation, $income, $employer, $employer_address, $spouse_name,
-    $spouse_occupation, $spouse_phone, $nok_surname, $nok_other_names, $nok_relationship,
-    $nok_phone, $nok_address, $declaration_full_name, $passport_path, $id_card_path, $signature_path
-);
-
-$db_success = $stmt->execute();
-$stmt->close();
-$conn->close();
-
-// 6. SEND EMAIL NOTIFICATION WITH ATTACHMENTS
-$to      = 'info@foresightmfbltd.com.ng'; // Change to target recipient
-$subject = "New Account Application - {$surname} {$other_names} ({$account_type})";
-$boundary = md5(time());
-
-// Headers
-$headers = "From: Foresight MFB System <no-reply@foresightmfb.com>\r\n";
-$headers .= "Reply-To: {$email}\r\n";
-$headers .= "MIME-Version: 1.0\r\n";
-$headers .= "Content-Type: multipart/mixed; boundary=\"{$boundary}\"\r\n";
-
-// HTML Body Construction
-$body = "--{$boundary}\r\n";
-$body .= "Content-Type: text/html; charset=UTF-8\r\n";
-$body .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
-$body .= "
-<html>
-<head><style>body{font-family:Arial,sans-serif;} td{padding:6px;border-bottom:1px solid #ddd;}</style></head>
-<body>
-  <h2>New Online Account Application</h2>
-  <p><strong>Account Type:</strong> {$account_type}</p>
-  <h3>Personal Details</h3>
-  <table>
-    <tr><td><strong>Full Name:</strong></td><td>{$surname} {$other_names}</td></tr>
-    <tr><td><strong>BVN / NIN:</strong></td><td>{$bvn} / {$nin}</td></tr>
-    <tr><td><strong>Sex / DOB:</strong></td><td>{$sex} / {$dob}</td></tr>
-    <tr><td><strong>Phone / Email:</strong></td><td>{$mobile} / {$email}</td></tr>
-    <tr><td><strong>ID Type:</strong></td><td>{$id_type}</td></tr>
-    <tr><td><strong>Address:</strong></td><td>{$residential_address}</td></tr>
-  </table>
-  <h3>Next of Kin</h3>
-  <table>
-    <tr><td><strong>Name:</strong></td><td>{$nok_surname} {$nok_other_names} ({$nok_relationship})</td></tr>
-    <tr><td><strong>Phone:</strong></td><td>{$nok_phone}</td></tr>
-  </table>
-  <br><p>Uploaded documents (Passport, ID Card, Signature) are attached to this email.</p>
-</body>
-</html>
-\r\n";
-
-// Attach Files Function
-$attachments = array_filter([$passport_file, $id_card_file, $signature_file]);
-foreach ($attachments as $file) {
-    if (file_exists($file['path'])) {
-        $content = chunk_split(base64_encode(file_get_contents($file['path'])));
-        $filename = $file['name'];
-
-        $body .= "--{$boundary}\r\n";
-        $body .= "Content-Type: application/octet-stream; name=\"{$filename}\"\r\n";
-        $body .= "Content-Transfer-Encoding: base64\r\n";
-        $body .= "Content-Disposition: attachment; filename=\"{$filename}\"\r\n\r\n";
-        $body .= $content . "\r\n";
+    $stmt = $conn->prepare($sql);
+    if (!$stmt) {
+        die("Prepare failed: (" . $conn->errno . ") " . $conn->error);
     }
+
+    $stmt->bind_param(
+        "sssssssssssssssssssssssssssssss",
+        $account_type, $surname, $other_names, $sex, $marital_status, $dob, $nationality, 
+        $state_of_origin, $residential_address, $bvn, $nin, $id_type, $mobile, $email, 
+        $occupation, $gross_income, $employer_name, $employer_address,
+        $spouse_name, $spouse_occ, $spouse_phone,
+        $nok_surname, $nok_other_names, $nok_relationship, $nok_phone, $nok_address, 
+        $passport_file, $id_card_file, $signature_file, $office_phone, $correspondence_address
+    );
+
+    if ($stmt->execute()) {
+        $applicant_name = $surname . " " . $other_names;
+
+        // Reusable SMTP Mail Function using PHPMailer and secure config constants
+        function sendSmtpNotification($senderEmail, $senderName, $recipientEmail, $recipientName, $subject, $bodyText, $isHtml = false) {
+            $mail = new PHPMailer(true);
+            try {
+                // Server settings
+                $mail->isSMTP();
+                $mail->Host       = 'mail.foresightmfbltd.com.ng'; 
+                $mail->SMTPAuth   = true;
+                $mail->Username   = SMTP_USER; 
+                $mail->Password   = SMTP_PASS; // Pulled securely from db_config.php
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            
+                $mail->Port       = 465;
+
+                // Sender & Reply-To settings
+                $mail->setFrom($senderEmail, $senderName);
+                $mail->addReplyTo($senderEmail, $senderName);
+                
+                // Recipient
+                $mail->addAddress($recipientEmail, $recipientName);
+
+                // Content
+                $mail->isHTML($isHtml);
+                $mail->Subject = $subject;
+                $mail->Body    = $bodyText;
+
+                $mail->send();
+                return true;
+            } catch (Exception $e) {
+                return false;
+            }
+        }
+
+        // A. Send Audit Review Email to Customer Service (From noreply)
+        $cs_to = "customerservice@foresightmfbltd.com.ng"; 
+        $cs_subject = "ACTION REQUIRED: New Account Application - " . $applicant_name;
+        
+        $cs_message = "Hello Customer Service Team,\n\n";
+        $cs_message .= "A new account application has just been submitted on the website portal.\n\n";
+        $cs_message .= "----------------------------------------\n";
+        $cs_message .= "Applicant Name: " . $applicant_name . "\n";
+        $cs_message .= "Account Type: " . $account_type . "\n";
+        $cs_message .= "Mobile Number: " . $mobile . "\n";
+        $cs_message .= "Email Address: " . $email . "\n";
+        $cs_message .= "BVN: " . $bvn . "\n";
+        $cs_message .= "----------------------------------------\n\n";
+        $cs_message .= "Please log in to the Admin Portal to review the application and print the official audit file:\n";
+        $cs_message .= "https://www.foresightmfbltd.com.ng/admin.php\n\n";
+        $cs_message .= "Foresight MFB Automated Notification System\n\n";
+        $cs_message .= "PLEASE DO NOT RESPOND TO THIS E-MAIL";
+        
+        sendSmtpNotification(
+            'noreply@foresightmfbltd.com.ng', 
+            'Foresight MFB System', 
+            $cs_to, 
+            'Customer Service Team', 
+            $cs_subject, 
+            $cs_message, 
+            false
+        );
+
+        // B. Send Confirmation Email to the Applicant (From noreply, with centered footer)
+        if (!empty($email)) {
+            $client_subject = "Account Application Received - Foresight Microfinance Bank Ltd";
+            
+            $client_message = "Dear " . $applicant_name . ",<br><br>";
+            $client_message .= "Thank you for applying to open a " . $account_type . " with Foresight Microfinance Bank Ltd.<br><br>";
+            $client_message .= "We have successfully received your application form. Our customer service team is currently processing your request, and we will contact you shortly once your account has been fully activated.<br><br>";
+            $client_message .= "Summary of your application:<br>";
+            $client_message .= "- Account Type: " . $account_type . "<br>";
+            $client_message .= "- Mobile: " . $mobile . "<br><br>";
+            $client_message .= "If you have any questions, please reach out to our support team.<br><br>";
+            $client_message .= "Warm regards,<br>";
+            $client_message .= "Foresight Microfinance Bank Ltd Team<br>";
+            $client_message .= "https://www.foresightmfbltd.com.ng<br><br>";
+            $client_message .= "<div style='text-align: center; color: #555; font-size: 12px; margin-top: 20px;'><strong>PLEASE DO NOT RESPOND TO THIS E-MAIL</strong></div>";
+
+            sendSmtpNotification(
+                'noreply@foresightmfbltd.com.ng', 
+                'Foresight Microfinance Bank', 
+                $email, 
+                $applicant_name, 
+                $client_subject, 
+                $client_message, 
+                true
+            );
+        }
+
+        echo "<script>alert('Account application submitted successfully!'); window.location.href='open-account.html';</script>";
+        exit;
+    } else {
+        echo "Error saving application: " . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+} else {
+    header("Location: open-account.html");
+    exit;
 }
-$body .= "--{$boundary}--";
-
-mail($to, $subject, $body, $headers);
-
-// 7. USER SUCCESS FEEDBACK
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Application Submitted</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-100 flex items-center justify-center min-h-screen p-4">
-  <div class="bg-white p-8 rounded-xl shadow-md border max-w-md w-full text-center">
-    <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">✓</div>
-    <h1 class="text-xl font-bold text-slate-800 mb-2">Application Submitted!</h1>
-    <p class="text-slate-600 text-sm mb-6">Thank you, <strong><?php echo $surname; ?></strong>. Your application for a <strong><?php echo $account_type; ?></strong> has been received successfully.</p>
-    <a href="index.html" class="inline-block px-6 py-2.5 bg-blue-600 text-white font-semibold text-sm rounded-lg hover:bg-blue-700 transition">Return to Home</a>
-  </div>
-</body>
-</html>
