@@ -8,16 +8,49 @@
   <!-- Client-side PDF Generation Engine -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body class="bg-slate-100 py-10 px-4">
+
+  <!-- Foresight Page Loader -->
+<div id="page-loader">
+  <div class="loader-content">
+
+    <img
+      src="/favicon.ico"
+      alt="Foresight Microfinance Bank"
+      class="loader-logo"
+    />
+
+    <div class="loader-text">
+      FORESIGHT
+    </div>
+
+    <div class="loader-tagline">
+      See further. Build bolder.
+    </div>
+
+    <div class="loader-bar">
+      <div id="loader-progress"></div>
+    </div>
+
+    <div id="loader-percent">0%</div>
+
+  </div>
+</div>
 
   <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md border border-slate-200">
     
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row justify-between items-center border-b pb-6 mb-6 gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Foresight Microfinance Bank Ltd.</h1>
-        <p class="text-xs text-slate-500 font-semibold">RC: 716052</p>
+        <img 
+  src="assets/images/logo.png" 
+  alt="Foresight Microfinance Bank Ltd."
+  class="h-12 w-auto"
+/>
+       <p class="text-xs text-slate-500 font-semibold">RC: 716052</p>
         <h2 class="text-lg font-bold text-slate-700 mt-2 uppercase tracking-wide">Account Opening Form</h2>
       </div>
       
@@ -145,11 +178,11 @@
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-600">Gross Annual Income</label>
-            <input type="text" name="income" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+            <input type="text" name="gross_income" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-600">Name of Employer</label>
-            <input type="text" name="employer" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+            <input type="text" name="employer_name" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
           </div>
         </div>
 
@@ -169,7 +202,7 @@
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-600">Occupation / Profession</label>
-            <input type="text" name="spouse_occupation" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
+            <input type="text" name="spouse_occ" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
           </div>
           <div>
             <label class="block text-xs font-medium text-slate-600">Telephone</label>
@@ -770,6 +803,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+/* =========================================
+   FORESIGHT PAGE LOADER
+========================================= */
+
+(function () {
+
+  const loader = document.getElementById("page-loader");
+  const progress = document.getElementById("loader-progress");
+  const percent = document.getElementById("loader-percent");
+
+  if (!loader || !progress || !percent) {
+    return;
+  }
+
+  let value = 0;
+
+  const loading = setInterval(function () {
+
+    value++;
+
+    progress.style.width = value + "%";
+    percent.textContent = value + "%";
+
+    if (value >= 100) {
+
+      clearInterval(loading);
+
+      setTimeout(function () {
+        loader.classList.add("hidden");
+      }, 300);
+
+    }
+
+  }, 20);
+
+})();
+
 </script>
 </body>
 </html>
