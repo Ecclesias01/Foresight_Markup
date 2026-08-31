@@ -100,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-
   const form = document.getElementById("applyForm");
   const submitBtn = document.getElementById("submitBtn");
 
@@ -108,48 +107,64 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  form.addEventListener("submit", (e) => {
-
-    e.preventDefault();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault(); // Prevent standard page reload
 
     const originalText = submitBtn.innerHTML;
 
+    // Show loading state
     submitBtn.innerHTML = `<span>Submitting...</span>`;
     submitBtn.style.opacity = "0.7";
     submitBtn.disabled = true;
 
-    setTimeout(() => {
+    try {
+      // Gather form data automatically using FormData
+      const formData = new FormData(form);
 
-      submitBtn.innerHTML = `✓ Submitted Successfully!`;
-      submitBtn.style.background = "#10b981";
+      // Send data to your PHP processor asynchronously
+      const response = await fetch("process-contact.php", {
+        method: "POST",
+        body: formData
+      });
+
+      if (response.ok) {
+        // Success state
+        submitBtn.innerHTML = `✓ Submitted Successfully!`;
+        submitBtn.style.background = "#10b981";
+        submitBtn.style.opacity = "1";
+        form.reset();
+      } else {
+        throw new Error("Server returned an error.");
+      }
+    } catch (error) {
+      // Error state
+      submitBtn.innerHTML = `❌ Failed. Try Again`;
+      submitBtn.style.background = "#ef4444";
       submitBtn.style.opacity = "1";
+    }
 
-      form.reset();
-
-      setTimeout(() => {
-
-        submitBtn.innerHTML = originalText;
-        submitBtn.style.background = "var(--btn-gradient)";
-        submitBtn.disabled = false;
-
-      }, 3000);
-
-    }, 1500);
-
+    // Reset button back to original state after 3 seconds
+    setTimeout(() => {
+      submitBtn.innerHTML = originalText;
+      submitBtn.style.background = "var(--btn-gradient)";
+      submitBtn.disabled = false;
+    }, 3000);
   });
-
 });
 
 document.addEventListener("DOMContentLoaded", () => {
   const searchForm = document.getElementById("errorSearchForm");
   const searchInput = document.getElementById("searchInput");
 
+  if (!searchForm || !searchInput) {
+    return;
+  }
+
   searchForm.addEventListener("submit", (e) => {
     e.preventDefault();
     const query = searchInput.value.trim();
 
     if (query) {
-      // Redirect to your site's search results page or homepage with query
       window.location.href = `/?search=${encodeURIComponent(query)}`;
     }
   });

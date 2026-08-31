@@ -1,9 +1,8 @@
 <?php
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0); // Hide errors from public view in production
 session_start();
 
-// Include configuration file (stores database credentials and admin username/password securely)
 require_once __DIR__ . '/db_config.php';
 
 // 1. CONFIGURATION & LOGIN CHECK
@@ -14,7 +13,6 @@ if (isset($_GET['action']) && $_GET['action'] === 'logout') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
-    // Uses ADMIN_USER and ADMIN_PASS constants defined in db_config.php
     if ($_POST['username'] === ADMIN_USER && $_POST['password'] === ADMIN_PASS) {
         $_SESSION['admin_logged_in'] = true;
         header('Location: admin.php');
@@ -24,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     }
 }
 
-// Render Login Page if not authenticated
 if (!isset($_SESSION['admin_logged_in'])) :
 ?>
 <!DOCTYPE html>
@@ -60,16 +57,75 @@ if (!isset($_SESSION['admin_logged_in'])) :
 <?php exit; endif; ?>
 
 <?php
-// 2. DATABASE CONNECTION & QUERIES
-// Using constants defined in db_config.php
+// 2. DATABASE CONNECTION
 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 if ($conn->connect_error) {
     die("Database Connection Failed: " . $conn->connect_error);
 }
 
-// Fetch Search and Filter Parameters
+// Handle Status Updates / Account Activation via POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_application_id'])) {
+    $app_id = intval($_POST['update_application_id']);
+    $new_status = trim($_POST['status'] ?? 'Pending');
+    $assigned_acct = trim($_POST['assigned_account_number'] ?? '');
+    
+    $up_stmt = $conn->prepare("UPDATE account_applications SET status = ?, assigned_account_number = ? WHERE id = ?");
+    $up_stmt->bind_param("ssi", $new_status, $assigned_acct, $app_id);
+    $up_stmt->execute();
+    $up_stmt->close();
+
+    // If status is Approved/Activated and an account number is provided, email the user automatically
+    if (($new_status === 'Approved' || $new_status === 'Activated') && !empty($assigned_acct)) {
+        // Fetch applicant email & name
+        $f_stmt = $conn->prepare("SELECT surname, other_names, email, account_type FROM account_applications WHERE id = ?");
+        $f_stmt->bind_param("i", $app_id);
+        $f_stmt->execute();
+        $res = $f_stmt->get_result()->fetch_assoc();
+        $f_stmt->close();
+
+        if ($res && !empty($res['email'])) {
+            require_once '/home/foresig2/public_html/phpmailer/Exception.php';
+            require_once '/home/foresig2/public_html/phpmailer/PHPMailer.php';
+            require_once '/home/foresig2/public_html/phpmailer/SMTP.php';
+
+            $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host       = 'mail.foresightmfbltd.com.ng';
+                $mail->SMTPAuth   = true;
+                $mail->Username   = SMTP_USER;
+                $mail->Password   = SMTP_PASS;
+                $mail->SMTPSecure = PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS;
+                $mail->Port       = 465;
+
+                $mail->setFrom('noreply@foresightmfbltd.com.ng', 'Foresight Microfinance Bank');
+                $mail->addAddress($res['email'], $res['surname'] . ' ' . $res['other_names']);
+                $mail->isHTML(true);
+                $mail->Subject = "Congratulations! Your " . $res['account_type'] . " has been Activated";
+                
+                $mailBody = "Dear " . $res['surname'] . " " . $res['other_names'] . ",<br><br>";
+                $mailBody .= "We are pleased to inform you that your application for a <strong>" . $res['account_type'] . "</strong> with Foresight Microfinance Bank Ltd has been successfully processed and approved.<br><br>";
+                $mailBody .= "Your New Account Number is: <h2 style='color: #1d4ed8; font-family: monospace;'>" . $assigned_acct . "</h2><br>";
+                $mailBody .= "You can now fund your account and begin enjoying our banking services. Welcome to the Foresight family!<br><br>";
+                $mailBody .= "Warm regards,<br><strong>Foresight MFB Team</strong><br>";
+                $mailBody .= "<div style='text-align: center; color: #555; font-size: 12px; margin-top: 20px;'><strong>PLEASE DO NOT RESPOND TO THIS E-MAIL</strong></div>";
+
+                $mail->Body = $mailBody;
+                $mail->send();
+            } catch (Exception $e) {
+                // Mail logging failure can be ignored or handled silently
+            }
+        }
+    }
+
+    header("Location: admin.php?updated=1");
+    exit;
+}
+
+// Fetch Search, Filter Parameters
 $search = trim($_GET['search'] ?? '');
 $filter_type = trim($_GET['account_type'] ?? '');
+$filter_status = trim($_GET['status'] ?? '');
 
 $query = "SELECT * FROM account_applications WHERE 1=1";
 $params = [];
@@ -88,6 +144,12 @@ if ($filter_type !== '') {
     $types .= "s";
 }
 
+if ($filter_status !== '') {
+    $query .= " AND status = ?";
+    array_push($params, $filter_status);
+    $types .= "s";
+}
+
 $query .= " ORDER BY submitted_at DESC";
 
 $stmt = $conn->prepare($query);
@@ -97,8 +159,6 @@ if (!empty($params)) {
 $stmt->execute();
 $result = $stmt->get_result();
 $applications = $result->fetch_all(MYSQLI_ASSOC);
-
-// Quick Stats
 $total_apps = count($applications);
 ?>
 <!DOCTYPE html>
@@ -108,55 +168,15 @@ $total_apps = count($applications);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - Account Applications</title>
   <script src="https://cdn.tailwindcss.com"></script>
- <style>
+  <style>
   @media print {
-    /* Hide everything except the modal form area */
-    body * { 
-      visibility: hidden !important; 
-    }
-    #printableArea, #printableArea * { 
-      visibility: visible !important; 
-    }
-    
-    /* Reset window/body settings for multi-page flow */
-    html, body {
-      height: auto !important;
-      overflow: visible !important;
-      background: white !important;
-    }
-    
-    #detailsModal {
-      position: absolute !important;
-      left: 0 !important;
-      top: 0 !important;
-      width: 100% !important;
-      height: auto !important;
-      background: white !important;
-      overflow: visible !important;
-      display: block !important;
-      z-index: 9999 !important;
-    }
-
-    #printableArea {
-      position: absolute !important;
-      left: 0 !important;
-      top: 0 !important;
-      width: 100% !important;
-      margin: 0 !important;
-      padding: 10px !important;
-      background: white !important;
-      overflow: visible !important;
-      max-height: none !important;
-      height: auto !important;
-    }
-
-    /* Allow sections to flow naturally across pages instead of forcing whole blocks down */
-    .space-y-6 > div {
-      page-break-inside: auto;
-      break-inside: auto;
-    }
+    body * { visibility: hidden !important; }
+    #printableArea, #printableArea * { visibility: visible !important; }
+    html, body { height: auto !important; overflow: visible !important; background: white !important; }
+    #detailsModal { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; background: white !important; display: block !important; z-index: 9999 !important; }
+    #printableArea { position: absolute !important; left: 0 !important; top: 0 !important; width: 100% !important; margin: 0 !important; padding: 10px !important; }
   }
-</style>
+  </style>
 </head>
 <body class="bg-slate-100 min-h-screen">
 
@@ -171,16 +191,23 @@ $total_apps = count($applications);
 
   <main class="max-w-7xl mx-auto py-8 px-4 print:p-0">
     
+    <?php if (isset($_GET['updated'])): ?>
+      <div class="bg-green-50 border border-green-200 text-green-700 text-xs p-3 rounded-lg mb-6 flex justify-between items-center">
+        <span>Application status updated successfully!</span>
+        <a href="admin.php" class="font-bold underline">Dismiss</a>
+      </div>
+    <?php endif; ?>
+
     <!-- Top Bar: Filters and Stats -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 print:hidden">
       <div>
         <h2 class="text-2xl font-bold text-slate-800">Applications Management</h2>
-        <p class="text-xs text-slate-500">Total Applications Found: <span class="font-bold text-slate-700"><?php echo $total_apps; ?></span></p>
+        <p class="text-xs text-slate-500">Total Found: <span class="font-bold text-slate-700"><?php echo $total_apps; ?></span></p>
       </div>
 
       <!-- Search & Filter Form -->
       <form method="GET" class="flex flex-wrap items-center gap-2 w-full md:w-auto">
-        <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search name, BVN, NIN..." class="text-xs p-2.5 border rounded-lg bg-white w-full md:w-60 focus:ring-2 focus:ring-blue-500 outline-none">
+        <input type="text" name="search" value="<?php echo htmlspecialchars($search); ?>" placeholder="Search name, BVN, NIN..." class="text-xs p-2.5 border rounded-lg bg-white w-full md:w-48 focus:ring-2 focus:ring-blue-500 outline-none">
         
         <select name="account_type" class="text-xs p-2.5 border rounded-lg bg-white outline-none">
           <option value="">All Account Types</option>
@@ -188,6 +215,15 @@ $total_apps = count($applications);
           <option value="Personal Banking" <?php echo $filter_type === 'Personal Banking' ? 'selected' : ''; ?>>Personal Banking</option>
           <option value="Cooperative Banking" <?php echo $filter_type === 'Cooperative Banking' ? 'selected' : ''; ?>>Cooperative Banking</option>
           <option value="Current Account" <?php echo $filter_type === 'Current Account' ? 'selected' : ''; ?>>Current Account</option>
+        </select>
+
+        <select name="status" class="text-xs p-2.5 border rounded-lg bg-white outline-none">
+          <option value="">All Statuses</option>
+          <option value="Pending" <?php echo $filter_status === 'Pending' ? 'selected' : ''; ?>>Pending</option>
+          <option value="Under Review" <?php echo $filter_status === 'Under Review' ? 'selected' : ''; ?>>Under Review</option>
+          <option value="Approved" <?php echo $filter_status === 'Approved' ? 'selected' : ''; ?>>Approved</option>
+          <option value="Activated" <?php echo $filter_status === 'Activated' ? 'selected' : ''; ?>>Activated</option>
+          <option value="Rejected" <?php echo $filter_status === 'Rejected' ? 'selected' : ''; ?>>Rejected</option>
         </select>
 
         <button type="submit" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs rounded-lg transition">Filter</button>
@@ -203,9 +239,9 @@ $total_apps = count($applications);
             <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-xs font-bold uppercase tracking-wider">
               <th class="p-4">Applicant Name</th>
               <th class="p-4">Account Type</th>
-              <th class="p-4">BVN / NIN</th>
-              <th class="p-4">Contact Details</th>
-              <th class="p-4">Submission Date</th>
+              <th class="p-4">Status</th>
+              <th class="p-4">BVN / Contact</th>
+              <th class="p-4">Submitted</th>
               <th class="p-4 text-center">Actions</th>
             </tr>
           </thead>
@@ -219,26 +255,35 @@ $total_apps = count($applications);
                 <tr class="hover:bg-slate-50 transition">
                   <td class="p-4 font-semibold text-slate-900">
                     <?php echo htmlspecialchars($app['surname'] . ' ' . $app['other_names']); ?>
+                    <?php if(!empty($app['assigned_account_number'])): ?>
+                      <div class="text-[10px] font-mono text-blue-600">Acct: <?php echo htmlspecialchars($app['assigned_account_number']); ?></div>
+                    <?php endif; ?>
                   </td>
                   <td class="p-4">
-                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border">
                       <?php echo htmlspecialchars($app['account_type']); ?>
                     </span>
                   </td>
                   <td class="p-4">
-                    <div>BVN: <span class="font-mono text-slate-600"><?php echo htmlspecialchars($app['bvn']); ?></span></div>
-                    <div>NIN: <span class="font-mono text-slate-600"><?php echo htmlspecialchars($app['nin']); ?></span></div>
+                    <?php 
+                      $statusColor = 'bg-amber-50 text-amber-700 border-amber-200';
+                      if($app['status'] === 'Approved' || $app['status'] === 'Activated') $statusColor = 'bg-green-50 text-green-700 border-green-200';
+                      if($app['status'] === 'Rejected') $statusColor = 'bg-red-50 text-red-700 border-red-200';
+                    ?>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border <?php echo $statusColor; ?>">
+                      <?php echo htmlspecialchars($app['status'] ?? 'Pending'); ?>
+                    </span>
                   </td>
                   <td class="p-4">
-                    <div><?php echo htmlspecialchars($app['mobile']); ?></div>
-                    <div class="text-slate-400"><?php echo htmlspecialchars($app['email']); ?></div>
+                    <div>BVN: <span class="font-mono text-slate-600"><?php echo htmlspecialchars($app['bvn']); ?></span></div>
+                    <div class="text-slate-400"><?php echo htmlspecialchars($app['mobile']); ?></div>
                   </td>
                   <td class="p-4 text-slate-500">
-                    <?php echo date('M d, Y - H:i', strtotime($app['submitted_at'])); ?>
+                    <?php echo date('M d, Y', strtotime($app['submitted_at'])); ?>
                   </td>
                   <td class="p-4 text-center">
                     <button onclick='openApplicantModal(<?php echo json_encode($app); ?>)' class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white font-semibold rounded text-xs transition">
-                      Review
+                      Review & Update
                     </button>
                   </td>
                 </tr>
@@ -250,23 +295,44 @@ $total_apps = count($applications);
     </div>
   </main>
 
-  <!-- APPLICANT DETAILS MODAL -->
+  <!-- APPLICANT DETAILS & STATUS MODAL -->
   <div id="detailsModal" class="fixed inset-0 bg-slate-900 bg-opacity-75 flex items-center justify-center p-4 hidden z-50 print:relative print:inset-auto print:bg-white print:p-0 print:block">
-    <div class="bg-white rounded-xl max-w-4xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden border print:max-h-none print:shadow-none print:border-none print:w-full">
+    <div class="bg-white rounded-xl max-w-4xl w-full max-h-[95vh] flex flex-col shadow-2xl overflow-hidden border print:max-h-none print:shadow-none print:border-none">
       
       <!-- Modal Header Bar -->
       <div class="px-6 py-4 bg-slate-900 text-white flex justify-between items-center print:hidden">
         <div>
-          <h3 class="text-base font-bold">Foresight Microfinance Bank Ltd - Official Application Review</h3>
-          <p class="text-xs text-slate-400">Continuous Single-Page Layout</p>
+          <h3 class="text-base font-bold">Foresight Microfinance Bank Ltd - Application Review & Status Portal</h3>
         </div>
         <button onclick="closeModal()" class="text-slate-300 hover:text-white text-xl font-bold">&times;</button>
       </div>
 
-      <!-- Modal Body Content Container (Continuous Single Page) -->
+      <!-- Status Update Toolbar (Non-printable) -->
+      <form method="POST" class="bg-slate-100 px-6 py-3 border-b flex flex-wrap items-center justify-between gap-3 print:hidden">
+        <input type="hidden" name="update_application_id" id="modalAppIdInput">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-700">Application Status:</span>
+          <select name="status" id="modalStatusSelect" class="text-xs p-1.5 border rounded bg-white font-semibold outline-none">
+            <option value="Pending">Pending</option>
+            <option value="Under Review">Under Review</option>
+            <option value="Approved">Approved</option>
+            <option value="Activated">Activated</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-700">Account Number:</span>
+          <input type="text" name="assigned_account_number" id="modalAcctInput" placeholder="Enter Account No." class="text-xs p-1.5 border rounded bg-white font-mono w-36 outline-none">
+        </div>
+        <button type="submit" class="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold text-xs rounded transition shadow">
+          Save Status & Email Customer
+        </button>
+      </form>
+
+      <!-- Modal Body Content Container -->
       <div id="printableArea" class="p-8 overflow-y-auto space-y-6 text-xs text-slate-800 bg-white flex-1">
         
-        <!-- Header Branding with Passport at Right -->
+        <!-- Header Branding -->
         <div class="border-b-2 border-slate-900 pb-4 flex justify-between items-start gap-4">
           <div class="space-y-3 flex-1">
             <div>
@@ -280,7 +346,7 @@ $total_apps = count($applications);
             </div>
           </div>
 
-          <!-- Passport Photograph Box (Top Right) -->
+          <!-- Passport Photograph -->
           <div class="border-2 border-slate-300 p-1.5 rounded bg-slate-50 text-center w-32 shadow-sm shrink-0">
             <span class="block font-bold text-[9px] text-slate-500 mb-1 uppercase">Passport Photo</span>
             <div id="passportContainer" class="h-32 w-full flex items-center justify-center overflow-hidden rounded bg-white border mb-1"></div>
@@ -291,7 +357,6 @@ $total_apps = count($applications);
         <!-- Section A: Personal Details -->
         <div class="space-y-3">
           <h4 class="font-bold text-white bg-slate-800 px-3 py-1.5 uppercase tracking-wider text-[11px]">(A.) PERSONAL DETAILS</h4>
-          
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3 bg-slate-50 p-3.5 border rounded">
             <div><span class="text-slate-500 block text-[10px] font-semibold">SURNAME:</span> <strong id="formSurname" class="text-slate-900 text-sm"></strong></div>
             <div class="md:col-span-2"><span class="text-slate-500 block text-[10px] font-semibold">OTHER NAMES:</span> <strong id="formOtherNames" class="text-slate-900 text-sm"></strong></div>
@@ -304,7 +369,6 @@ $total_apps = count($applications);
             <div class="md:col-span-3"><span class="text-slate-500 block text-[10px] font-semibold">STATE OF ORIGIN:</span> <strong id="formState"></strong></div>
           </div>
           
-          <!-- Means of Identification Box -->
           <div class="bg-slate-50 p-3.5 border rounded space-y-3">
             <div>
               <span class="text-slate-500 block text-[10px] font-semibold mb-1.5">MEANS OF IDENTIFICATION:</span> 
@@ -315,7 +379,6 @@ $total_apps = count($applications);
               </div>
             </div>
 
-            <!-- Downloadable / Viewable ID File Row -->
             <div class="pt-2 border-t flex items-center justify-between gap-4">
               <div>
                 <span class="text-slate-500 block text-[10px] font-semibold">ATTACHED ID DOCUMENT FILE:</span>
@@ -389,7 +452,7 @@ $total_apps = count($applications);
             <div><span class="text-slate-500 block font-semibold">BOM's Approval:</span> <div class="border-b border-slate-400 h-6 mt-1"></div></div>
             <div><span class="text-slate-500 block font-semibold">Opening Amount:</span> <div class="border-b border-slate-400 h-6 mt-1"></div></div>
             <div><span class="text-slate-500 block font-semibold">TRANS. I.D.:</span> <div class="border-b border-slate-400 h-6 mt-1"></div></div>
-            <div><span class="text-slate-500 block font-semibold">Acct. No.:</span> <div class="border-b border-slate-400 h-6 mt-1 font-bold text-blue-700"></div></div>
+            <div><span class="text-slate-500 block font-semibold">Acct. No.:</span> <div class="border-b border-slate-400 h-6 mt-1 font-bold text-blue-700" id="formPrintedAcctNo"></div></div>
             <div class="md:col-span-3"><span class="text-slate-500 block font-semibold">Sign / Date:</span> <div class="border-b border-slate-400 h-8 mt-1"></div></div>
           </div>
         </div>
@@ -409,7 +472,11 @@ $total_apps = count($applications);
 
   <script>
     function openApplicantModal(app) {
-      // Form Data Population
+      document.getElementById('modalAppIdInput').value = app.id;
+      document.getElementById('modalStatusSelect').value = app.status || 'Pending';
+      document.getElementById('modalAcctInput').value = app.assigned_account_number || '';
+      document.getElementById('formPrintedAcctNo').innerText = app.assigned_account_number || '';
+
       document.getElementById('formAppId').innerText = '#' + app.id;
       document.getElementById('formAccountType').innerText = app.account_type;
       document.getElementById('formSurname').innerText = app.surname;
@@ -422,7 +489,6 @@ $total_apps = count($applications);
       document.getElementById('formNationality').innerText = app.nationality;
       document.getElementById('formState').innerText = app.state_of_origin || 'N/A';
       
-      // ID Type Checkboxes formatting helper
       const idType = (app.id_type || '').toLowerCase();
       document.getElementById('idTypeIntl').innerText = "Int'l Passport " + (idType.includes('passport') ? '[X]' : '[ ]');
       document.getElementById('idTypeDriver').innerText = "Driver's Licence " + (idType.includes('driver') ? '[X]' : '[ ]');
@@ -433,19 +499,16 @@ $total_apps = count($applications);
       document.getElementById('formMobile').innerText = app.mobile;
       document.getElementById('formEmail').innerText = app.email;
 
-      // FIXED: Properly mapping Employment & Income fields
-      document.getElementById('formOccupation').innerText = app.occupation && app.occupation.trim() !== '' ? app.occupation : 'N/A';
-      document.getElementById('formIncome').innerText = app.gross_income && app.gross_income.trim() !== '' ? app.gross_income : 'N/A';
-      document.getElementById('formEmployer').innerText = app.employer_name && app.employer_name.trim() !== '' ? app.employer_name : 'N/A';
-      document.getElementById('formEmployerAddress').innerText = app.employer_address && app.employer_address.trim() !== '' ? app.employer_address : 'N/A';
-      document.getElementById('formOfficePhone').innerText = app.office_phone && app.office_phone.trim() !== '' ? app.office_phone : 'N/A';
+      document.getElementById('formOccupation').innerText = app.occupation || 'N/A';
+      document.getElementById('formIncome').innerText = app.gross_income || 'N/A';
+      document.getElementById('formEmployer').innerText = app.employer_name || 'N/A';
+      document.getElementById('formEmployerAddress').innerText = app.employer_address || 'N/A';
+      document.getElementById('formOfficePhone').innerText = app.office_phone || 'N/A';
 
-      // Spouse Details Mapping
-      document.getElementById('formSpouseName').innerText = app.spouse_name && app.spouse_name.trim() !== '' ? app.spouse_name : 'N/A';
-      document.getElementById('formSpouseOcc').innerText = app.spouse_occ && app.spouse_occ.trim() !== '' ? app.spouse_occ : 'N/A';
-      document.getElementById('formSpousePhone').innerText = app.spouse_phone && app.spouse_phone.trim() !== '' ? app.spouse_phone : 'N/A';
+      document.getElementById('formSpouseName').innerText = app.spouse_name || 'N/A';
+      document.getElementById('formSpouseOcc').innerText = app.spouse_occ || 'N/A';
+      document.getElementById('formSpousePhone').innerText = app.spouse_phone || 'N/A';
 
-      // Next of Kin
       document.getElementById('formNokSurname').innerText = app.nok_surname;
       document.getElementById('formNokOtherNames').innerText = app.nok_other_names;
       document.getElementById('formNokRel').innerText = app.nok_relationship;
@@ -454,7 +517,6 @@ $total_apps = count($applications);
 
       document.getElementById('formDeclaredBy').innerText = app.surname + ' ' + app.other_names;
 
-      // Render Files & Signatures
       setupFilePreview(app.passport_file, 'passportContainer', 'passportLink');
       setupFilePreview(app.id_card_file, 'idCardContainer', 'idCardLink');
       setupSignaturePreview(app.signature_file, 'formSignaturePreview', 'signatureLink');
@@ -472,7 +534,6 @@ $total_apps = count($applications);
           link.href = filePath;
           link.style.display = (linkId === 'idCardLink') ? 'inline-block' : 'inline';
         }
-
         if (fileName.match(/\.(jpg|jpeg|png)$/i)) {
           container.innerHTML = `<img src="${filePath}" class="max-h-full max-w-full object-contain">`;
         } else {
@@ -494,7 +555,6 @@ $total_apps = count($applications);
           link.href = filePath;
           link.style.display = 'inline';
         }
-
         if (fileName.match(/\.(jpg|jpeg|png)$/i)) {
           container.innerHTML = `<img src="${filePath}" class="max-h-full max-w-full object-contain">`;
         } else {
