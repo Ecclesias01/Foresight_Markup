@@ -139,11 +139,48 @@
           </div>
         </div>
 
-        <div class="mt-4 bg-slate-50 p-4 rounded-md border border-slate-200">
-          <label class="block text-xs font-semibold text-slate-700 uppercase">Upload Means of Identification *</label>
-          <span class="text-xs text-slate-500 block mb-2">Upload image of selected ID. Sent as separate attachment.</span>
-          <input type="file" name="id_card" id="id_card" accept="image/*" required class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+        
+<div class="mt-4 bg-slate-50 p-4 rounded-md border border-slate-200">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Means of Identification -->
+        <div>
+            <label for="id_card" class="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                Upload Means of Identification *
+            </label>
+            <span class="text-xs text-slate-500 block mb-2">
+                Upload image of selected ID. Sent as separate attachment.
+            </span>
+            <input
+                type="file"
+                name="id_card"
+                id="id_card"
+                accept="image/*"
+                required
+                class="block w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+            >
         </div>
+
+        <!-- Utility Bill -->
+        <div>
+            <label for="utility_bill" class="block text-xs font-semibold text-slate-700 uppercase mb-1">
+                Upload Utility Bill *
+            </label>
+            <span class="text-xs text-slate-500 block mb-2">
+                Upload recent utility bill image.
+            </span>
+            <input
+                type="file"
+                name="utility_bill"
+                id="utility_bill"
+                accept="image/*"
+                required
+                class="block w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+            >
+        </div>
+
+    </div>
+</div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           <div>
@@ -192,24 +229,58 @@
         </div>
       </div>
 
-      <!-- Section B: If Married -->
-      <div class="border-t pt-4">
-        <h3 class="font-bold text-slate-800 text-sm tracking-wider uppercase mb-3">(B.) IF MARRIED</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-xs font-medium text-slate-600">Name of Spouse</label>
-            <input type="text" name="spouse_name" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-slate-600">Occupation / Profession</label>
-            <input type="text" name="spouse_occ" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
-          </div>
-          <div>
-            <label class="block text-xs font-medium text-slate-600">Telephone</label>
-            <input type="tel" name="spouse_phone" class="mt-1 block w-full border border-slate-300 rounded-md p-2 text-sm">
-          </div>
-        </div>
-      </div>
+<!-- Section B: If Married -->
+<div class="border-t pt-5 mt-5">
+  <h3 class="font-bold text-slate-800 text-sm tracking-wider uppercase mb-4">
+    (B.) IF MARRIED
+  </h3>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+    <!-- Name of Spouse -->
+    <div class="min-w-0">
+      <label for="spouse_name"
+        class="block text-xs font-medium text-slate-600 mb-1">
+        Name of Spouse
+      </label>
+      <input
+        type="text"
+        id="spouse_name"
+        name="spouse_name"
+        class="block w-full min-w-0 border border-slate-300 rounded-md p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+    </div>
+
+    <!-- Spouse Occupation -->
+    <div class="min-w-0">
+      <label for="spouse_occ"
+        class="block text-xs font-medium text-slate-600 mb-1">
+        Occupation / Profession
+      </label>
+      <input
+        type="text"
+        id="spouse_occ"
+        name="spouse_occ"
+        class="block w-full min-w-0 border border-slate-300 rounded-md p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+    </div>
+
+    <!-- Spouse Telephone -->
+    <div class="min-w-0">
+      <label for="spouse_phone"
+        class="block text-xs font-medium text-slate-600 mb-1">
+        Telephone
+      </label>
+      <input
+        type="tel"
+        id="spouse_phone"
+        name="spouse_phone"
+        class="block w-full min-w-0 border border-slate-300 rounded-md p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+    </div>
+
+  </div>
+</div>
 
       <!-- Section C: Next of Kin -->
       <div class="border-t pt-4">

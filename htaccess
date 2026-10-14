@@ -1,61 +1,46 @@
 RewriteEngine On
 
-# ==========================================
-# FORCE HTTPS
-# ==========================================
-RewriteCond %{HTTPS} !=on
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+# ==========================================================
+# DO NOT REDIRECT POST/AJAX/PHP PROCESSING FILES
+# ==========================================================
+
+RewriteRule ^process-contact\.php$ - [L]
+RewriteRule ^submit\.php$ - [L]
 
 
-# ==========================================
-# REMOVE /index FROM HOMEPAGE URL
-# /index -> /
-# /index.html -> /
-# ==========================================
-RewriteCond %{THE_REQUEST} \s/+index(?:\.html)?(?:[\s?]|$) [NC]
-RewriteRule ^index(?:\.html)?$ / [R=301,L]
+# ==========================================================
+# REMOVE .php FROM NORMAL PAGE URLs
+# ==========================================================
+
+RewriteCond %{THE_REQUEST} \s/+(.+)\.php(?:[\s?]|$) [NC]
+RewriteRule ^(.+)\.php$ /$1 [R=301,L]
 
 
-# ==========================================
-# DO NOT REWRITE REAL FILES OR DIRECTORIES
-# Protects CSS, JS, images, fonts, etc.
-# ==========================================
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^ - [L]
+# ==========================================================
+# REMOVE .html FROM NORMAL PAGE URLs
+# ==========================================================
 
-
-# ==========================================
-# REMOVE .html FROM URLs
-# /about.html -> /about
-# ==========================================
-RewriteCond %{THE_REQUEST} \s/+(.+?)\.html(?:[\s?]) [NC]
+RewriteCond %{THE_REQUEST} \s/+(.+)\.html(?:[\s?]|$) [NC]
 RewriteRule ^(.+)\.html$ /$1 [R=301,L]
 
 
-# ==========================================
-# SERVE .html WITHOUT EXTENSION
-# /about -> /about.html
-# ==========================================
+# ==========================================================
+# CLEAN URL → .php
+# Example: /admin → /admin.php
+# ==========================================================
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+)$ $1.php [L]
+
+
+# ==========================================================
+# CLEAN URL → .html
+# Example: /about → /about.html
+# ==========================================================
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}.html -f
-RewriteRule ^(.+?)/?$ $1.html [L]
-
-
-# ==========================================
-# PHP - cPanel generated handler
-# ==========================================
-
-# php -- BEGIN cPanel-generated handler, do not edit
-# Set the “ea-php74” package as the default “PHP” programming language.
-<IfModule mime_module>
-  AddHandler application/x-httpd-ea-php74___lsphp .php .php7 .phtml
-</IfModule>
-# php -- END cPanel-generated handler
-# php -- BEGIN cPanel-generated handler, do not edit
-# Set the “ea-php74” package as the default “PHP” programming language.
-<IfModule mime_module>
-  AddHandler application/x-httpd-ea-php74___lsphp .php .php7 .phtml
-</IfModule>
-# php -- END cPanel-generated handler, do not edit
+RewriteRule ^(.+)$ $1.html [L]
